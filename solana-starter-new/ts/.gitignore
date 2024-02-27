@@ -1,0 +1,6 @@
+*wallet.json
+node_modules
+yarn.lock
+dev-wallet.json
+cluster1/dev-wallet.json
+cluster1/wba-wallet.json
