@@ -60,6 +60,10 @@ describe("vault-2024", () => {
   const program = anchor.workspace.Vault2024 as Program<Vault2024>;
 
   it("Deposit SOL into Vault!", async () => {
+
+    let balance_before_deposit = await program.provider.connection.getBalance(maker.publicKey);
+    console.log(`Maker balance before deposit: ${balance_before_deposit}`);
+
     // Add your test here.
     const tx = await program.methods
       .deposit(seed, new anchor.BN(1 * LAMPORTS_PER_SOL))
@@ -73,6 +77,12 @@ describe("vault-2024", () => {
       .rpc()
       .then(confirm)
       .then(log);
+
+      const vault_log = await program.account.vault.fetch(vault);
+      console.log(`Vault seed: ${vault_log.seed}, created at: ${vault_log.createdAt}`);
+
+      let balance_after_deposit = await program.provider.connection.getBalance(maker.publicKey);
+      console.log(`Maker balance after deposit: ${balance_after_deposit}`);
 
   });
 
@@ -90,6 +100,37 @@ describe("vault-2024", () => {
       .then(confirm)
       .then(log);
 
+      let balance_after_cancel = await program.provider.connection.getBalance(maker.publicKey);
+      console.log(`Maker balance after cancel: ${balance_after_cancel}`);
+
+  });
+
+  it("Deposit SOL into Vault!", async () => {
+
+    let balance_before_deposit = await program.provider.connection.getBalance(taker.publicKey);
+    console.log(`Taker balance before deposit: ${balance_before_deposit}`);
+
+
+    // Add your test here.
+    const tx = await program.methods
+      .deposit(seed, new anchor.BN(1 * LAMPORTS_PER_SOL))
+      .accounts({
+        maker: maker.publicKey,
+        taker: taker.publicKey,
+        vault,
+        systemProgram: SystemProgram.programId,
+      })
+      .signers([maker])
+      .rpc()
+      .then(confirm)
+      .then(log);
+
+      const vault_log = await program.account.vault.fetch(vault);
+      console.log(`Vault seed: ${vault_log.seed}, created at: ${vault_log.createdAt}`);
+
+      let balance_after_deposit = await program.provider.connection.getBalance(taker.publicKey);
+      console.log(`Taker balance after deposit: ${balance_after_deposit}`);
+
   });
 
   it("Claim test", async () => {
@@ -105,6 +146,9 @@ describe("vault-2024", () => {
       .rpc()
       .then(confirm)
       .then(log);
+
+      let balance_after_claim = await program.provider.connection.getBalance(taker.publicKey);
+      console.log(`Taker balance after cancel: ${balance_after_claim}`);
 
   });
 

@@ -29,39 +29,14 @@ pub mod vault_2024 {
     }
 
     pub fn cancel(ctx: Context<Cancel>) -> Result<()> {
-        let accts = Transfer {
-            from: ctx.accounts.vault.to_account_info(),
-            to: ctx.accounts.maker.to_account_info(),
-        };
-
-        let seed = ctx.accounts.vault.seed.to_le_bytes();
-        let maker =  ctx.accounts.vault.maker.as_ref();
-        let taker =  ctx.accounts.vault.taker.as_ref();
-
-        let seeds = &[
-            "vault".as_bytes(),
-            seed.as_ref(),
-            maker,
-            taker,
-            &[ctx.accounts.vault.bump],
-        ];
-        let signer_seeds = &[&seeds[..]];
-
-        let cpi_ctx = CpiContext::new_with_signer(
-            ctx.accounts.system_program.to_account_info(),
-            accts,
-            signer_seeds,
-        );
-
-        transfer(cpi_ctx, ctx.accounts.vault.get_lamports())
-
+        Ok(())
     }
 
     pub fn claim(ctx: Context<Claim>) -> Result<()> {
         Ok(())
     }
 
-}
+} 
 
 #[derive(Accounts)]
 #[instruction(seed:u64)]
@@ -79,11 +54,11 @@ pub struct Deposit<'info> {
 pub struct Cancel<'info> {
     #[account(mut)]
     pub maker: Signer<'info>,
-    #[account(mut, has_one= maker)]
+    // close account and send lamports to the signer/maker
+    #[account(mut, has_one=maker, close=maker)]
     pub vault: Account<'info, Vault>,
     pub system_program: Program<'info, System>,
 }
-
 
 
 #[derive(Accounts)]
@@ -91,7 +66,7 @@ pub struct Claim<'info> {
     #[account(mut)]
     pub taker: Signer<'info>,
     // close account and send lamports to the signer/taker
-    #[account(mut, has_one= taker, close=taker)]
+    #[account(mut, has_one=taker, close=taker)]
     pub vault: Account<'info, Vault>,
     pub system_program: Program<'info, System>,
 }
