@@ -1,0 +1,7 @@
+{
+    "rust-analyzer.linkedProjects": [
+        "./programs/time-vault/Cargo.toml",
+        "./programs/time-vault/Cargo.toml"
+    ],
+    "rust-analyzer.showUnlinkedFileNotification": false
+}
