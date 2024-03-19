@@ -1,0 +1,12 @@
+{
+    "rust-analyzer.linkedProjects": [
+        "./programs/splcards/Cargo.toml",
+        "./programs/splcards/Cargo.toml",
+        "./programs/splcards/Cargo.toml",
+        "./programs/splcards/Cargo.toml",
+        "./programs/splcards/Cargo.toml",
+        "./programs/splcards/Cargo.toml",
+        "./programs/splcards/Cargo.toml",
+        "./programs/splcards/Cargo.toml"
+    ]
+}
