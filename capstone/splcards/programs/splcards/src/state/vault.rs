@@ -15,6 +15,11 @@ impl Space for Vault {
     // total: 81 bytes
 }
 
+ 
+// use a global vault (not per user) - don't need a vault if we do it global
+// if I have time left - add blockers / extra checks for suspicious behaviour (like 50% of all original tokens are withdrawn within 1 hour)
+
+
 
 impl Vault {
 

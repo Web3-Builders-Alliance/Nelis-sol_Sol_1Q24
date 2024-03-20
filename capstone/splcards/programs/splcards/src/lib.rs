@@ -3,6 +3,7 @@ use anchor_lang::prelude::*;
 mod state;
 mod context;
 use context::*;
+mod constants;
 
 declare_id!("2FUFG2i7pQt3DyU8oA2reL91oDyYfXkh2KfNbWhsbTf2");
 

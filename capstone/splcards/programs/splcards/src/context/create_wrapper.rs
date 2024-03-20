@@ -9,23 +9,22 @@ use crate::state::Wrapper;
 use crate::constants::*;
 
 #[derive(Accounts)]
-pub struct Wrap<'info> {
+pub struct CreateWrapper<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
-    #[account(mut,  
-        associated_token::authority = payer,      
-        associated_token::mint = mint
-    )]
-    pub payer_ata: InterfaceAccount<'info, TokenAccount>,
     // Mint of the original tokens
     pub mint: InterfaceAccount<'info, Mint>,
     #[account(
+        init,
+        payer = payer,
+        space = Wrapper::INIT_SPACE,
         seeds = [SEED_WRAPPER_ACCOUNT, mint.key().as_ref()],
-        bump = wrapper.bump
+        bump
     )]
     pub wrapper: Account<'info, Wrapper>,
     #[account(
-        mut,
+        init, 
+        payer = payer,
         seeds = [SEED_VAULT_ACCOUNT, wrapper.key().as_ref()],
         bump,
         token::authority = wrapper,
@@ -37,11 +36,9 @@ pub struct Wrap<'info> {
     pub system_program: Program<'info, System>,
 }
 
-impl<'info> Wrap<'info> {
-    pub fn process_wrapping(&mut self, _bumps: &WrapBumps) -> Result<()> {
 
-
-        // transfer original tokens to vault
+impl<'info> CreateWrapper<'info> {
+    pub fn process_create_wrapper(&mut self, _bumps: &CreateWrapperBumps) -> Result<()> {
 
         Ok(())
     }

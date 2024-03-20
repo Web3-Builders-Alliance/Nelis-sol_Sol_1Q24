@@ -2,7 +2,7 @@ use anchor_lang::prelude::*;
 
 
 #[account]
-pub struct VaultTokenPolicy {
+pub struct UserTokenPolicy {
     pub wallet: Pubkey, // 32 bytes
     pub bank: Pubkey,   // 32 bytes
     pub mint: Pubkey,   // 32 bytes
@@ -12,12 +12,12 @@ pub struct VaultTokenPolicy {
 }
 
 
-impl Space for VaultTokenPolicy {
+impl Space for UserTokenPolicy {
     const INIT_SPACE: usize = 8 + 32 * 3 + 16 + 9 + 1;
     // total: 122 bytes
 }
 
-impl VaultTokenPolicy {
+impl UserTokenPolicy {
 
     pub fn new() -> Result<()> {
         unimplemented!()
