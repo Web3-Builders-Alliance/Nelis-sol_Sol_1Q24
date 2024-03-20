@@ -7,6 +7,9 @@
         "./programs/splcards/Cargo.toml",
         "./programs/splcards/Cargo.toml",
         "./programs/splcards/Cargo.toml",
+        "./programs/splcards/Cargo.toml",
+        "./programs/splcards/Cargo.toml",
         "./programs/splcards/Cargo.toml"
-    ]
+    ],
+    "rust-analyzer.showUnlinkedFileNotification": false
 }
