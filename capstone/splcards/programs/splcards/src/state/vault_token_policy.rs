@@ -16,3 +16,19 @@ impl Space for VaultTokenPolicy {
     const INIT_SPACE: usize = 8 + 32 * 3 + 16 + 9 + 1;
     // total: 122 bytes
 }
+
+impl VaultTokenPolicy {
+
+    pub fn new() -> Result<()> {
+        unimplemented!()
+    }
+
+    pub fn update() -> Result<()> {
+        unimplemented!()
+    }
+
+    pub fn check_compliance() -> Result<()> {
+        unimplemented!()
+    }
+
+}

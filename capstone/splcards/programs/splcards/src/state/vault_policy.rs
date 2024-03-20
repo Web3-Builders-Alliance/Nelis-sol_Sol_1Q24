@@ -19,3 +19,20 @@ impl Space for VaultPolicy {
     const INIT_SPACE: usize = 8 + 32 * 3 + 1 * 2 + 37 * 2 + 17 + 1;
     // total: 198 bytes
 }
+
+
+impl VaultPolicy {
+
+    pub fn new() -> Result<()> {
+        unimplemented!()
+    }
+
+    pub fn update() -> Result<()> {
+        unimplemented!()
+    }
+
+    pub fn check_compliance() -> Result<()> {
+        unimplemented!()
+    }
+
+}

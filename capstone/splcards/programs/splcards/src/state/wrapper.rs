@@ -13,3 +13,27 @@ impl Space for Wrapper {
   const INIT_SPACE: usize = 8 + 32 + 32 + 16 + 1;
   // total: 89 bytes
 }
+
+impl Wrapper {
+
+    pub fn new() -> Result<()> {
+        unimplemented!()
+    }
+
+    pub fn update() -> Result<()> {
+        unimplemented!()
+    }
+
+    pub fn wrap() -> Result<()> {
+        unimplemented!()
+    }
+
+    pub fn unwrap() -> Result<()> {
+        unimplemented!()
+    }
+
+    pub fn get_address() -> Result<()> {
+        unimplemented!()
+    }
+
+}

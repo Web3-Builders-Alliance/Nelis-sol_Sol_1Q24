@@ -4,7 +4,7 @@ use anchor_lang::prelude::*;
 #[account]
 pub struct Vault {
     pub authority: Pubkey, // 32 bytes
-    pub mints: vec<Pubkey>, // 32 bytes
+    pub mints: Vec<Pubkey>, // 32 bytes
     pub seed: u64, // 8 bytes
     pub amount: u64, // 8 bytes
     pub bump: u8,   // 1 byte
@@ -13,4 +13,37 @@ pub struct Vault {
 impl Space for Vault {
     const INIT_SPACE: usize = 8 + 32 + 32 + 8 + 8 + 1;
     // total: 81 bytes
+}
+
+
+impl Vault {
+
+    pub fn new() -> Result<()> {
+        unimplemented!()
+    }
+
+    pub fn update() -> Result<()> {
+        unimplemented!()
+    }
+
+    pub fn deposit() -> Result<()> {
+        unimplemented!()
+    }
+
+    pub fn withdraw() -> Result<()> {
+        unimplemented!()
+    }
+
+    pub fn get_address() -> Result<()> {
+        unimplemented!()
+    }
+
+    pub fn get_token_account() -> Result<()> {
+        unimplemented!()
+    }
+    
+    pub fn get_token_accounts() -> Result<()> {
+        unimplemented!()
+    }
+
 }
