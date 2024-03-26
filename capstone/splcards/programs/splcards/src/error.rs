@@ -1,2 +1,17 @@
 use anchor_lang::prelude::*;
 
+#[error_code]
+pub enum UserPolicyErrorCodes {
+    #[msg("Spend Limit Exceeded")]
+    SpendLimitExceeded,
+    #[msg("Pubkey Not In Allow List")]
+    PubkeyNotInAllowList,
+    #[msg("Pubkey In Block List")]
+    PubkeyInBlockList,
+    #[msg("Spending Window Violation")]
+    SpendingWindowViolation,
+    #[msg("Missing Required Signers")]
+    MissingRequiredSigners,
+    #[msg("Not In Spend Window")]
+    NotInSpendWindow,
+}
