@@ -16,7 +16,7 @@ pub struct Wrapper {
 // Wrapper is just to reference, it doesn't do transactions, so no bump is needed
 
 impl Space for Wrapper {
-  const INIT_SPACE: usize = 8 + 32 + 32 + 32 + 1;
+  const INIT_SPACE: usize = 8 + 32 + 32 + 32 + 32 + 1;
   // total: 89 bytes
 }
 

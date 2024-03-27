@@ -55,7 +55,8 @@ describe("Token Policy tests", () => {
   const signer2 = Keypair.generate();
 
   const mintAuth = program.provider.publicKey;
-  const mint = Keypair.generate();
+  const mintOriginal = Keypair.generate();
+  const mintWrapped = Keypair.generate();
   const decimals = 0;
 
   const random_pubkey1 = Keypair.generate().publicKey;
@@ -97,7 +98,7 @@ describe("Token Policy tests", () => {
     [
       Buffer.from("token-policy"),
       program.provider.publicKey.toBuffer(),
-      mint.publicKey.toBuffer(),
+      mintOriginal.publicKey.toBuffer(),
     ],
     program.programId,
   )[0];
@@ -112,19 +113,19 @@ describe("Token Policy tests", () => {
     const transaction = new Transaction().add(
       SystemProgram.createAccount({
         fromPubkey: wallet.publicKey,
-        newAccountPubkey: mint.publicKey,
+        newAccountPubkey: mintOriginal.publicKey,
         space: mintLen,
         lamports: lamports,
         programId: TOKEN_2022_PROGRAM_ID,
       }),
       createInitializeTransferHookInstruction(
-        mint.publicKey,
+        mintOriginal.publicKey,
         wallet.publicKey,
         program.programId, // Transfer Hook Program ID
         TOKEN_2022_PROGRAM_ID,
       ),
       createInitializeMintInstruction(
-        mint.publicKey,
+        mintOriginal.publicKey,
         decimals,
         mintAuth,
         null,
@@ -135,11 +136,29 @@ describe("Token Policy tests", () => {
     const txSig = await sendAndConfirmTransaction(
       provider.connection,
       transaction,
-      [wallet.payer, mint],
+      [wallet.payer, mintOriginal],
     );
     console.log(`Transaction Signature: ${txSig}`);
   });  
 
+
+
+  const wrapper = PublicKey.findProgramAddressSync(
+    [
+      Buffer.from("wrapper"),
+      mintOriginal.publicKey.toBuffer(),
+    ],
+    program.programId,
+  )[0];
+
+
+  const vault = PublicKey.findProgramAddressSync(
+    [
+      Buffer.from("vault"),
+      mintOriginal.publicKey.toBuffer(),
+    ],
+    program.programId,
+  )[0];
 
 
   // CREATE NEW WRAPPER
@@ -149,86 +168,19 @@ describe("Token Policy tests", () => {
       "USDC"
     )
     .accounts({
-      mint: mint.publicKey,
-      tokenPolicy: token_policy_pda,
+      mintOriginal: mintOriginal.publicKey,
+      mintWrapped: mintOriginal.publicKey,
+      wrapper: wrapper,
+      vault: vault,
       systemProgram: anchor.web3.SystemProgram.programId,
+      associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+      tokenProgram: TOKEN_2022_PROGRAM_ID,
     })
     .rpc()
     .then(confirm)
-    .then(log_token_policy)
-    // .then(log_tx);
+    .then(log_tx);
 
   });
 
-
-  // DELETE TOKEN POLICY
-  it("Delete Token Policy", async () => {
-
-    const tx = await program.methods.deleteTokenPolicy()
-    .accounts({
-      mint: mint.publicKey,
-      tokenPolicy: token_policy_pda,
-      systemProgram: anchor.web3.SystemProgram.programId,
-    })
-    .rpc()
-    .then(confirm)
-    // .then(log_token_policy)
-    // .then(log_tx);
-
-  });
-
-
-  // CREATE NEW BASIC TOKEN POLICY
-  it("Create new basic Token Policy", async () => {
-
-    const tx = await program.methods.newTokenPolicy()
-    .accounts({
-      mint: mint.publicKey,
-      tokenPolicy: token_policy_pda,
-      systemProgram: anchor.web3.SystemProgram.programId,
-    })
-    .rpc()
-    .then(confirm)
-    .then(log_token_policy)
-    // .then(log_tx);
-
-  });
-
-
-  // ADD SPEND LIMIT TO TOKEN POLICY
-  it("Add spend limit to Token Policy", async () => {
-
-    const tx = await program.methods.addSpendLimitToTokenPolicy(
-      new anchor.BN(10000)
-    )
-    .accounts({
-      mint: mint.publicKey,
-      tokenPolicy: token_policy_pda,
-      systemProgram: anchor.web3.SystemProgram.programId,
-    })
-    .rpc()
-    .then(confirm)
-    .then(log_token_policy)
-    // .then(log_tx);
-
-  });
-
-
-  // REMOVE SPEND LIMIT FROM TOKEN POLICY
-  it("Remove spend limit from Token Policy", async () => {
-
-    const tx = await program.methods.removeSpendLimitFromTokenPolicy()
-    .accounts({
-      mint: mint.publicKey,
-      tokenPolicy: token_policy_pda,
-      systemProgram: anchor.web3.SystemProgram.programId,
-    })
-    .rpc()
-    .then(confirm)
-    .then(log_token_policy)
-    // .then(log_tx);
-
-  });
-  
   
 });

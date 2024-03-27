@@ -1,8 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_spl::{
-    token::Token,
     associated_token::AssociatedToken,
-    token_interface::{Mint, TokenAccount},
+    token_interface::{Mint, TokenAccount, TokenInterface},
 };
 
 use crate::state::Wrapper;
@@ -34,7 +33,7 @@ pub struct WrapperInstructions<'info> {
       )]
     pub vault: InterfaceAccount<'info, TokenAccount>,
     pub associated_token_program: Program<'info, AssociatedToken>,
-    pub token_program: Program<'info, Token>,
+    pub token_program: Interface<'info, TokenInterface>,
     pub system_program: Program<'info, System>,
 }
 
