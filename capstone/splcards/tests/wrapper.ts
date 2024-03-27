@@ -85,10 +85,10 @@ describe("Token Policy tests", () => {
   const spending_window = [new anchor.BN(start_ts), new anchor.BN(end_ts)]
 
 
-  // Log data from from the user policy PDA
+  // Log data from from the Wrapper
   // remove console.log() to shut down the logs
-  const log_token_policy = async () => {
-    const token_policy_log = await program.account.tokenPolicyState.fetch(token_policy_pda);
+  const log_wrapper = async () => {
+    const token_policy_log = await program.account.wrapperState.fetch(wrapper);
     console.log(token_policy_log);
   }
 
@@ -165,7 +165,9 @@ describe("Token Policy tests", () => {
   it("Create a new wrapper", async () => {
 
     const tx = await program.methods.newWrapper(
-      "USDC"
+      "USDC",
+      "USDC",
+      "https://www.shdwstorage.com/wrapper.json"
     )
     .accounts({
       mintOriginal: mintOriginal.publicKey,
@@ -178,9 +180,32 @@ describe("Token Policy tests", () => {
     })
     .rpc()
     .then(confirm)
-    .then(log_tx);
+    .then(log_wrapper);
+    // .then(log_tx);
 
   });
 
+
+  // UPDATE WRAPPER SYMBOL
+  it("Update wrapper symbol", async () => {
+
+    const tx = await program.methods.updateWrapper(
+      "BONK"
+    )
+    .accounts({
+      mintOriginal: mintOriginal.publicKey,
+      mintWrapped: mintOriginal.publicKey,
+      wrapper: wrapper,
+      vault: vault,
+      systemProgram: anchor.web3.SystemProgram.programId,
+      associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+      tokenProgram: TOKEN_2022_PROGRAM_ID,
+    })
+    .rpc()
+    .then(confirm)
+    .then(log_wrapper)
+    // .then(log_tx);
+
+  });
   
 });

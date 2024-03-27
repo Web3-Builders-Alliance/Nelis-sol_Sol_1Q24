@@ -7,7 +7,7 @@ use anchor_spl::{
 };
 pub use spl_transfer_hook_interface::instruction::{ExecuteInstruction, TransferHookInstruction};
 
-use crate::state::Wrapper;
+use crate::state::WrapperState;
 use crate::constants::*;
 
 #[derive(Accounts)]
@@ -33,7 +33,7 @@ pub struct Wrap<'info> {
         seeds = [SEED_WRAPPER_ACCOUNT, mint_original.key().as_ref()],
         bump = wrapper.bump
     )]
-    pub wrapper: Account<'info, Wrapper>,
+    pub wrapper: Account<'info, WrapperState>,
     #[account(
         mut,
         seeds = [SEED_VAULT_ACCOUNT, mint_original.key().as_ref()],
@@ -49,7 +49,7 @@ pub struct Wrap<'info> {
 }
 
 impl<'info> Wrap<'info> {
-    pub fn process_wrapping(&mut self, amount: u64, bumps: &WrapBumps) -> Result<()> {
+    pub fn wrap(&mut self, amount: u64, bumps: &WrapBumps) -> Result<()> {
 
         // transfer original tokens to vault
         let cpi_accounts = Transfer {
@@ -86,7 +86,6 @@ impl<'info> Wrap<'info> {
         );
 
         mint_to(ctx_mint, amount)?;
-
 
         Ok(())
     }

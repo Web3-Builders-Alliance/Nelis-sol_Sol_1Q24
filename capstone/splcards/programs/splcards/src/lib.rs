@@ -94,7 +94,15 @@ pub mod splcards {
         ctx.accounts.new_full_token_policy(spend_limit_amount, &ctx.bumps)
     }
 
-    // Create the most basic User Policy account and add rules/policies later on
+    /// Initializes a new token policy PDA.
+    ///
+    /// # Arguments
+    ///
+    /// * `ctx` - The context for the initialization (automatically added).
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the initialization fails.
     pub fn new_token_policy(ctx: Context<TokenPolicyInstructions>) -> Result<()> {
         ctx.accounts.new_token_policy(&ctx.bumps)
     }
@@ -115,22 +123,31 @@ pub mod splcards {
 
     /* 3. Wrapper account instructions */ 
 
-    pub fn new_wrapper(ctx: Context<WrapperInstructions>, symbol: String) -> Result<()> {
-        ctx.accounts.new_wrapper(symbol, &ctx.bumps)
+    pub fn new_wrapper(ctx: Context<WrapperInstructions>, name: String, symbol: String, uri: String) -> Result<()> {
+        ctx.accounts.new_wrapper(name, symbol, uri, &ctx.bumps)
+    }
+
+    pub fn update_wrapper(ctx: Context<WrapperInstructions>, symbol: String) -> Result<()> {
+        ctx.accounts.update_wrapper(symbol)
     }
 
 
+    /* 4. Wrapping instructions */ 
 
+    pub fn wrap(ctx: Context<Wrap>, amount: u64) -> Result<()> {
+        ctx.accounts.wrap(amount, &ctx.bumps)
+    }
 
+    pub fn unwrap(ctx: Context<Unwrap>, amount: u64) -> Result<()> {
+        ctx.accounts.unwrap(amount, &ctx.bumps)
+    }
 
 
     pub fn transact(ctx: Context<Transact>) -> Result<()> {
         ctx.accounts.process_transaction(&ctx.bumps)
     }
 
-    pub fn wrap(ctx: Context<Wrap>, amount: u64) -> Result<()> {
-        ctx.accounts.process_wrapping(amount, &ctx.bumps)
-    }
+
 
 }
 
