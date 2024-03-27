@@ -9,11 +9,6 @@ pub struct WrapperState {
     pub bump: u8,
 }
 
-// create a PDA and call it USDC-22 (example)
-// you can do this stateless, you can derive the mint of the wrapped on the fly, based off the original mint
-// you store the USDC in a ATA/Vault
-// Wrapper is just to reference, it doesn't do transactions, so no bump is needed
-
 impl Space for WrapperState {
   const INIT_SPACE: usize = 8 + 32 + 32 + 32 + 32 + 1;
   // total: 89 bytes
