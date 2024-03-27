@@ -16,7 +16,7 @@ pub struct Wrap<'info> {
     pub payer: Signer<'info>,
     #[account(mut,  
         associated_token::authority = payer,      
-        associated_token::mint = mint_original
+        associated_token::mint = wrapper.mint_original
     )]
     pub payer_ata_original: InterfaceAccount<'info, TokenAccount>,
     #[account(init_if_needed,  
@@ -25,21 +25,19 @@ pub struct Wrap<'info> {
         associated_token::mint = mint_wrapped
     )]
     pub payer_ata_wrapped: InterfaceAccount<'info, TokenAccount>,
-    // Mint of the original tokens
-    pub mint_original: InterfaceAccount<'info, Mint>,
     // Mint of the wrapped tokens
     pub mint_wrapped: InterfaceAccount<'info, Mint>,
     #[account(
-        seeds = [SEED_WRAPPER_ACCOUNT, mint_original.key().as_ref()],
+        seeds = [SEED_WRAPPER_ACCOUNT, wrapper.mint_original.key().as_ref()],
         bump = wrapper.bump
     )]
     pub wrapper: Account<'info, WrapperState>,
     #[account(
         mut,
-        seeds = [SEED_VAULT_ACCOUNT, mint_original.key().as_ref()],
+        seeds = [SEED_VAULT_ACCOUNT, wrapper.mint_original.key().as_ref()],
         bump,
         token::authority = wrapper,
-        token::mint = mint_original
+        token::mint = wrapper.mint_original
       )]
     pub vault: InterfaceAccount<'info, TokenAccount>,
     pub associated_token_program: Program<'info, AssociatedToken>,
@@ -65,18 +63,18 @@ impl<'info> Wrap<'info> {
 
 
         // mint tokens to user
-        let mint_original = self.mint_original.to_account_info().key().clone();
+        // let mint_original = self.mint_original.to_account_info().key().clone();
 
         let signer_seeds: [&[&[u8]];1] = [&[
-            SEED_VAULT_ACCOUNT, 
-            mint_original.as_ref(),
-            &[bumps.vault],
+            SEED_WRAPPER_ACCOUNT, 
+            self.wrapper.mint_original.as_ref(),
+            &[self.wrapper.bump],
         ]];
         
         let cpi_accounts_mint = MintTo {
             mint: self.mint_wrapped.to_account_info(),
             to: self.payer_ata_wrapped.to_account_info(),
-            authority: self.mint_wrapped.to_account_info(),
+            authority: self.wrapper.to_account_info(),
         };
 
         let ctx_mint = CpiContext::new_with_signer(
