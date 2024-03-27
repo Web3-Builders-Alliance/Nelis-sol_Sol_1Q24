@@ -123,14 +123,21 @@ impl<'info> WrapperInstructions<'info> {
         )?;
 
 
+        // sender, mint, receiver accounts are always present in transfer hook
+        // amount is in the instructions
+
+        // create a look up table to pass the user policy account
+        // medium article
+        
+
         // Step 3: Initialize Mint & Metadata Account
         invoke(
             &initialize_mint2(
                 &self.token_program.key(),
                 &self.mint_wrapped.key(),
                 &self.payer.key(),
-                None,
-                0,
+                Some(&self.wrapper.key()),
+                self.mint_original.decimals,
             )?,
             &vec![
                 self.mint_wrapped.to_account_info(),
