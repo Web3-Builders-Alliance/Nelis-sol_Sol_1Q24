@@ -1,9 +1,9 @@
 use anchor_lang::prelude::*;
 use anchor_spl::{
     associated_token::AssociatedToken, 
-    token::{transfer, Token, Transfer}, 
+    token::{Token}, 
     token_2022::{mint_to, MintTo, Token2022}, 
-    token_interface::{Mint, TokenAccount}
+    token_interface::{Mint, TokenAccount, TransferChecked, transfer_checked}
 };
 pub use spl_transfer_hook_interface::instruction::{ExecuteInstruction, TransferHookInstruction};
 
@@ -14,17 +14,22 @@ use crate::constants::*;
 pub struct Wrap<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
-    #[account(mut,  
+    #[account(
+        init_if_needed,  
+        payer = payer, 
         associated_token::authority = payer,      
-        associated_token::mint = wrapper.mint_original
+        associated_token::mint = mint_original
     )]
     pub payer_ata_original: InterfaceAccount<'info, TokenAccount>,
-    #[account(init_if_needed,  
+    #[account(
+        init_if_needed,  
         payer = payer,
         associated_token::authority = payer,      
         associated_token::mint = mint_wrapped
     )]
     pub payer_ata_wrapped: InterfaceAccount<'info, TokenAccount>,
+    // Mint of the wrapped tokens
+    pub mint_original: InterfaceAccount<'info, Mint>,
     // Mint of the wrapped tokens
     pub mint_wrapped: InterfaceAccount<'info, Mint>,
     #[account(
@@ -33,11 +38,12 @@ pub struct Wrap<'info> {
     )]
     pub wrapper: Account<'info, WrapperState>,
     #[account(
-        mut,
-        seeds = [SEED_VAULT_ACCOUNT, wrapper.mint_original.key().as_ref()],
+        init_if_needed,  
+        payer = payer,
+        seeds = [SEED_VAULT_ACCOUNT, mint_original.key().as_ref()],
         bump,
         token::authority = wrapper,
-        token::mint = wrapper.mint_original
+        token::mint = mint_original
       )]
     pub vault: InterfaceAccount<'info, TokenAccount>,
     pub associated_token_program: Program<'info, AssociatedToken>,
@@ -47,43 +53,42 @@ pub struct Wrap<'info> {
 }
 
 impl<'info> Wrap<'info> {
-    pub fn wrap(&mut self, amount: u64, bumps: &WrapBumps) -> Result<()> {
-
-        // transfer original tokens to vault
-        let cpi_accounts = Transfer {
-            from: self.payer_ata_original.to_account_info(),
-            to: self.vault.to_account_info(),
-            authority: self.payer.to_account_info()
-          };
-      
-        let ctx = CpiContext::new(self.token_program.to_account_info(), cpi_accounts);
-      
-        transfer(ctx, amount)?;
+    pub fn wrap(&mut self, amount: u64) -> Result<()> {
 
 
+        // let cpi_accounts = TransferChecked {
+        //     from: self.payer_ata_original.to_account_info(),
+        //     mint: self.mint_original.to_account_info(),
+        //     to: self.vault.to_account_info(),
+        //     authority: self.payer.to_account_info(),
+        // };
+        // let ctx = CpiContext::new(
+        //     self.token_program.to_account_info(), 
+        //     cpi_accounts
+        // );
 
-        // mint tokens to user
-        // let mint_original = self.mint_original.to_account_info().key().clone();
+        // transfer_checked(ctx, amount, self.mint_original.decimals)?;
 
-        let signer_seeds: [&[&[u8]];1] = [&[
-            SEED_WRAPPER_ACCOUNT, 
-            self.wrapper.mint_original.as_ref(),
-            &[self.wrapper.bump],
-        ]];
+
+        // let signer_seeds: [&[&[u8]];1] = [&[
+        //     SEED_WRAPPER_ACCOUNT, 
+        //     self.wrapper.mint_original.as_ref(),
+        //     &[self.wrapper.bump],
+        // ]];
         
-        let cpi_accounts_mint = MintTo {
-            mint: self.mint_wrapped.to_account_info(),
-            to: self.payer_ata_wrapped.to_account_info(),
-            authority: self.wrapper.to_account_info(),
-        };
+        // let cpi_accounts_mint = MintTo {
+        //     mint: self.mint_wrapped.to_account_info(),
+        //     to: self.payer_ata_wrapped.to_account_info(),
+        //     authority: self.wrapper.to_account_info(),
+        // };
 
-        let ctx_mint = CpiContext::new_with_signer(
-            self.token_extensions_program.to_account_info(), 
-            cpi_accounts_mint, 
-            &signer_seeds
-        );
+        // let ctx_mint = CpiContext::new_with_signer(
+        //     self.token_extensions_program.to_account_info(), 
+        //     cpi_accounts_mint, 
+        //     &signer_seeds
+        // );
 
-        mint_to(ctx_mint, amount)?;
+        // mint_to(ctx_mint, amount)?;
 
         Ok(())
     }

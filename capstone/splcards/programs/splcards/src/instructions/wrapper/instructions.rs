@@ -13,7 +13,7 @@ use anchor_spl::{
 
 pub use spl_token_2022::{
     extension::ExtensionType,
-    instruction::{initialize_mint_close_authority, initialize_permanent_delegate, initialize_mint2},
+    instruction::{initialize_mint_close_authority, initialize_permanent_delegate, initialize_mint, initialize_mint2},
     extension::{
         transfer_hook::instruction::initialize as intialize_transfer_hook,
         metadata_pointer::instruction::initialize as initialize_metadata_pointer,
@@ -31,11 +31,15 @@ use crate::constants::*;
 #[derive(Accounts)]
 pub struct WrapperInstructions<'info> {
     #[account(mut)]
+    /// CHECK
     pub payer: Signer<'info>,
-    // Mint of the original tokens
+    // (non-existing) mint of the wrapper tokens
+    #[account(mut)]
+    /// CHECK
+    pub mint_wrapped: Signer<'info>,
+    // (existing) mint of the original tokens
+    #[account(mut)]
     pub mint_original: InterfaceAccount<'info, Mint>,
-    // Mint of the original tokens
-    pub mint_wrapped: InterfaceAccount<'info, Mint>,
     #[account(
         init_if_needed,
         payer = payer,
@@ -53,6 +57,8 @@ pub struct WrapperInstructions<'info> {
         token::mint = mint_original
       )]
     pub vault: InterfaceAccount<'info, TokenAccount>,
+    /// CHECK: this is fine since we are hard coding the rent sysvar.
+    pub rent: UncheckedAccount<'info>,
     pub associated_token_program: Program<'info, AssociatedToken>,
     pub token_program: Program<'info, Token2022>,
     pub system_program: Program<'info, System>,
@@ -74,10 +80,8 @@ impl<'info> WrapperInstructions<'info> {
         // Step 1: Initialize Account
         let size = ExtensionType::try_calculate_account_len::<spl_token_2022::state::Mint>(
             &[
-                ExtensionType::MintCloseAuthority,
-                ExtensionType::PermanentDelegate,
-                ExtensionType::MetadataPointer,
                 ExtensionType::TransferHook,
+                ExtensionType::MetadataPointer,
             ],
         ).unwrap();
 
@@ -91,7 +95,7 @@ impl<'info> WrapperInstructions<'info> {
         };
 
         let extension_extra_space = metadata.tlv_size_of().unwrap();
-        let rent = &Rent::from_account_info(&self.mint_wrapped.to_account_info())?;
+        let rent = &Rent::from_account_info(&self.rent.to_account_info())?;
         let lamports = rent.minimum_balance(size + extension_extra_space);
 
         invoke(
@@ -99,7 +103,7 @@ impl<'info> WrapperInstructions<'info> {
                 &self.payer.key(),
                 &self.mint_wrapped.key(),
                 lamports,
-                (size).try_into().unwrap(),
+                size.try_into().unwrap(),
                 &spl_token_2022::id(),
             ),
             &vec![
@@ -122,27 +126,28 @@ impl<'info> WrapperInstructions<'info> {
             ],
         )?;
 
-
-        // sender, mint, receiver accounts are always present in transfer hook
-        // amount is in the instructions
-
-        // create a look up table to pass the user policy account
-        // medium article
-        
-
-        // Step 3: Initialize Mint & Metadata Account
+        // 2.4: Metadata Pointer
         invoke(
-            &initialize_mint2(
+            &initialize_metadata_pointer(
                 &self.token_program.key(),
                 &self.mint_wrapped.key(),
-                &self.payer.key(),
-                Some(&self.wrapper.key()),
-                self.mint_original.decimals,
+                Some(self.wrapper.key()),
+                Some(self.mint_wrapped.key()),
             )?,
             &vec![
                 self.mint_wrapped.to_account_info(),
             ],
         )?;
+
+
+        // // sender, mint, receiver accounts are always present in transfer hook
+        // // amount is in the instructions
+
+        // // create a look up table to pass the user policy account
+        // // medium article
+        
+
+        // Step 3: Initialize Mint & Metadata Account
 
         let mint_original = self.mint_original.to_account_info().key().clone();
 
@@ -153,16 +158,13 @@ impl<'info> WrapperInstructions<'info> {
         ]];
 
         invoke_signed(
-            &initialize_metadata_account(
+            &initialize_mint2(
                 &self.token_program.key(),
                 &self.mint_wrapped.key(),
                 &self.wrapper.key(),
-                &self.mint_wrapped.key(),
-                &self.payer.key(),
-                name.clone(),
-                symbol,
-                uri.clone(),
-            ),
+                Some(&self.wrapper.key()),
+                self.mint_original.decimals,
+            )?,
             &vec![
                 self.mint_wrapped.to_account_info(),
                 self.wrapper.to_account_info(),
@@ -170,6 +172,26 @@ impl<'info> WrapperInstructions<'info> {
             ],
             &signer_seeds
         )?;
+
+
+        // invoke_signed(
+        //     &initialize_metadata_account(
+        //         &self.token_program.key(),
+        //         &self.mint_wrapped.key(),
+        //         &self.wrapper.key(),
+        //         &self.mint_wrapped.key(),
+        //         &self.payer.key(),
+        //         name.clone(),
+        //         symbol,
+        //         uri.clone(),
+        //     ),
+        //     &vec![
+        //         self.mint_wrapped.to_account_info(),
+        //         self.wrapper.to_account_info(),
+        //         self.payer.to_account_info(),
+        //     ],
+        //     &signer_seeds
+        // )?;
 
 
         Ok(())

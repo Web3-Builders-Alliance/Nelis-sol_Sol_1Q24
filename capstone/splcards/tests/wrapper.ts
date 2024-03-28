@@ -8,9 +8,11 @@ import { Keypair,
   SystemProgram,
   Transaction,
   sendAndConfirmTransaction, 
+  SYSVAR_RENT_PUBKEY,
 } from "@solana/web3.js";
 import {
   ExtensionType,
+  TOKEN_PROGRAM_ID,
   TOKEN_2022_PROGRAM_ID,
   getMintLen,
   createInitializeMintInstruction,
@@ -20,9 +22,10 @@ import {
   createTransferCheckedInstruction,
   getAssociatedTokenAddressSync,
   createAssociatedTokenAccountIdempotentInstruction,
+  createMint,
 } from "@solana/spl-token";
 
-describe("Token Policy tests", () => {
+describe("Wrapper tests", () => {
   // Configure the client to use the local cluster.
   anchor.setProvider(anchor.AnchorProvider.env());
 
@@ -58,6 +61,23 @@ describe("Token Policy tests", () => {
   const mintOriginal = Keypair.generate();
   const mintWrapped = Keypair.generate();
   const decimals = 0;
+
+
+const payerAtaOriginal = getAssociatedTokenAddressSync(
+  mintOriginal.publicKey, 
+  wallet.publicKey, 
+  false, 
+  TOKEN_2022_PROGRAM_ID
+);
+
+
+const payerAtaWrapped = getAssociatedTokenAddressSync(
+    mintWrapped.publicKey,
+    program.provider.publicKey,
+    false, 
+    TOKEN_2022_PROGRAM_ID
+);
+
 
   const random_pubkey1 = Keypair.generate().publicKey;
   const random_pubkey2 = Keypair.generate().publicKey;
@@ -161,26 +181,30 @@ describe("Token Policy tests", () => {
   )[0];
 
 
+  console.log(`mintWrapped public key: ${mintWrapped.publicKey.toString()}`)
   // CREATE NEW WRAPPER
   it("Create a new wrapper", async () => {
 
     const tx = await program.methods.newWrapper(
       "USDC",
       "USDC",
-      "https://www.shdwstorage.com/wrapper.json"
+      "https://www.example.com/wrapper.json"
     )
     .accounts({
+      payer: wallet.payer.publicKey,
+      mintWrapped: mintWrapped.publicKey,
       mintOriginal: mintOriginal.publicKey,
-      mintWrapped: mintOriginal.publicKey,
       wrapper: wrapper,
       vault: vault,
+      rent: SYSVAR_RENT_PUBKEY,
       systemProgram: anchor.web3.SystemProgram.programId,
       associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
       tokenProgram: TOKEN_2022_PROGRAM_ID,
     })
+    .signers([wallet.payer, mintWrapped])
     .rpc()
-    .then(confirm)
-    .then(log_wrapper);
+    .then(confirm);
+    // .then(log_wrapper);
     // .then(log_tx);
 
   });
@@ -193,19 +217,49 @@ describe("Token Policy tests", () => {
       "BONK"
     )
     .accounts({
+      payer: wallet.payer.publicKey,
+      mintWrapped: mintWrapped.publicKey,
       mintOriginal: mintOriginal.publicKey,
-      mintWrapped: mintOriginal.publicKey,
       wrapper: wrapper,
       vault: vault,
+      rent: SYSVAR_RENT_PUBKEY,
       systemProgram: anchor.web3.SystemProgram.programId,
       associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
       tokenProgram: TOKEN_2022_PROGRAM_ID,
     })
+    .signers([wallet.payer, mintWrapped])
     .rpc()
-    .then(confirm)
-    .then(log_wrapper)
+    .then(confirm);
+    // .then(log_wrapper)
     // .then(log_tx);
 
   });
+
+
+
+ // WRAP TOKEN
+it("Wrap token", async () => {
+
+  const tx = await program.methods.wrap(
+      new anchor.BN(100)
+  )
+  .accounts({
+    payer: wallet.payer.publicKey,
+    payerAtaOriginal: payerAtaOriginal,
+    payerAtaWrapped: payerAtaWrapped,
+    mintOriginal: mintOriginal.publicKey,
+    mintWrapped: mintWrapped.publicKey,
+    wrapper: wrapper,
+    vault: vault,
+    associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+    tokenProgram: TOKEN_PROGRAM_ID,
+    tokenExtensionsProgram: TOKEN_2022_PROGRAM_ID,
+    systemProgram: anchor.web3.SystemProgram.programId,
+  })
+  .signers([wallet.payer])
+  .rpc({skipPreflight: true})
+  .then(confirm)
+});
+
   
 });

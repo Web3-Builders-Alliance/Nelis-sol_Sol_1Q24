@@ -135,7 +135,7 @@ pub mod splcards {
     /* 4. Wrapping instructions */ 
 
     pub fn wrap(ctx: Context<Wrap>, amount: u64) -> Result<()> {
-        ctx.accounts.wrap(amount, &ctx.bumps)
+        ctx.accounts.wrap(amount)
     }
 
     pub fn unwrap(ctx: Context<Unwrap>, amount: u64) -> Result<()> {

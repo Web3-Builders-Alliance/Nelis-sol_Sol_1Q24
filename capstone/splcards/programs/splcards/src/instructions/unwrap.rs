@@ -52,7 +52,6 @@ impl<'info> Unwrap<'info> {
 
     pub fn unwrap(&mut self, amount: u64, bumps: &UnwrapBumps) -> Result<()> {
 
-        // burn tokens from user
         burn(
             CpiContext::new(
                 self.token_program.to_account_info(),
