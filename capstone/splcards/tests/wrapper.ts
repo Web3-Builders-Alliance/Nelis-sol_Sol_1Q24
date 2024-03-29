@@ -23,6 +23,7 @@ import {
   getAssociatedTokenAddressSync,
   createAssociatedTokenAccountIdempotentInstruction,
   createMint,
+  MINT_SIZE,
 } from "@solana/spl-token";
 
 describe("Wrapper tests", () => {
@@ -112,7 +113,6 @@ const payerAtaWrapped = getAssociatedTokenAddressSync(
     console.log(token_policy_log);
   }
 
-
   // UserPolicy constant
   const token_policy_pda = PublicKey.findProgramAddressSync(
     [
@@ -123,32 +123,37 @@ const payerAtaWrapped = getAssociatedTokenAddressSync(
     program.programId,
   )[0];
 
-
-
   it("Create Mint Account with Transfer Hook Extension", async () => {
-    const extensions = [ExtensionType.TransferHook];
-    const mintLen = getMintLen(extensions);
-    const lamports = await provider.connection.getMinimumBalanceForRentExemption(mintLen);
+    const lamports = await provider.connection.getMinimumBalanceForRentExemption(MINT_SIZE);
   
     const transaction = new Transaction().add(
       SystemProgram.createAccount({
         fromPubkey: wallet.publicKey,
         newAccountPubkey: mintOriginal.publicKey,
-        space: mintLen,
+        space: MINT_SIZE,
         lamports: lamports,
         programId: TOKEN_2022_PROGRAM_ID,
       }),
-      createInitializeTransferHookInstruction(
-        mintOriginal.publicKey,
-        wallet.publicKey,
-        program.programId, // Transfer Hook Program ID
-        TOKEN_2022_PROGRAM_ID,
-      ),
       createInitializeMintInstruction(
         mintOriginal.publicKey,
         decimals,
         mintAuth,
         null,
+        TOKEN_2022_PROGRAM_ID,
+      ),
+      createAssociatedTokenAccountIdempotentInstruction(
+        wallet.publicKey,
+        payerAtaOriginal,
+        wallet.publicKey,
+        mintOriginal.publicKey,
+        TOKEN_2022_PROGRAM_ID,
+      ),
+      createMintToInstruction(
+        mintOriginal.publicKey,
+        payerAtaOriginal,
+        wallet.publicKey,
+        100,
+        [],
         TOKEN_2022_PROGRAM_ID,
       ),
     );
@@ -236,30 +241,32 @@ const payerAtaWrapped = getAssociatedTokenAddressSync(
   });
 
 
+console.log(payerAtaOriginal.toString());
 
-//  // WRAP TOKEN
-// it("Wrap token", async () => {
+ // WRAP TOKEN
+it("Wrap token", async () => {
 
-//   const tx = await program.methods.wrap(
-//       new anchor.BN(100)
-//   )
-//   .accounts({
-//     payer: wallet.payer.publicKey,
-//     payerAtaOriginal: payerAtaOriginal,
-//     payerAtaWrapped: payerAtaWrapped,
-//     mintOriginal: mintOriginal.publicKey,
-//     mintWrapped: mintWrapped.publicKey,
-//     wrapper: wrapper,
-//     vault: vault,
-//     associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-//     tokenProgram: TOKEN_PROGRAM_ID,
-//     tokenExtensionsProgram: TOKEN_2022_PROGRAM_ID,
-//     systemProgram: anchor.web3.SystemProgram.programId,
-//   })
-//   .signers([wallet.payer])
-//   .rpc({skipPreflight: true})
-//   .then(confirm)
-// });
+  const tx = await program.methods.wrap(
+      new anchor.BN(100)
+  )
+  .accounts({
+    payer: wallet.payer.publicKey,
+    payerAtaOriginal: payerAtaOriginal,
+    payerAtaWrapped: payerAtaWrapped,
+    mintOriginal: mintOriginal.publicKey,
+    mintWrapped: mintWrapped.publicKey,
+    wrapper: wrapper,
+    vault: vault,
+    associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+    // REMEMBER TO SWITCH THIS UP if you use a Natvie Mint as original Token
+    tokenProgram: TOKEN_2022_PROGRAM_ID,
+    tokenExtensionsProgram: TOKEN_2022_PROGRAM_ID,
+    systemProgram: anchor.web3.SystemProgram.programId,
+  })
+  .signers([wallet.payer])
+  .rpc({skipPreflight: true})
+  .then(confirm)
+});
 
   
 });
