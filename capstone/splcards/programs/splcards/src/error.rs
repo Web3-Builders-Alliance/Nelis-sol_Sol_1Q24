@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 
 #[error_code]
-pub enum UserPolicyErrorCodes {
+pub enum WalletPolicyErrorCodes {
     #[msg("Spend Limit Exceeded")]
     SpendLimitExceeded,
     #[msg("Pubkey Not In Allow List")]

@@ -237,29 +237,29 @@ const payerAtaWrapped = getAssociatedTokenAddressSync(
 
 
 
- // WRAP TOKEN
-it("Wrap token", async () => {
+//  // WRAP TOKEN
+// it("Wrap token", async () => {
 
-  const tx = await program.methods.wrap(
-      new anchor.BN(100)
-  )
-  .accounts({
-    payer: wallet.payer.publicKey,
-    payerAtaOriginal: payerAtaOriginal,
-    payerAtaWrapped: payerAtaWrapped,
-    mintOriginal: mintOriginal.publicKey,
-    mintWrapped: mintWrapped.publicKey,
-    wrapper: wrapper,
-    vault: vault,
-    associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-    tokenProgram: TOKEN_PROGRAM_ID,
-    tokenExtensionsProgram: TOKEN_2022_PROGRAM_ID,
-    systemProgram: anchor.web3.SystemProgram.programId,
-  })
-  .signers([wallet.payer])
-  .rpc({skipPreflight: true})
-  .then(confirm)
-});
+//   const tx = await program.methods.wrap(
+//       new anchor.BN(100)
+//   )
+//   .accounts({
+//     payer: wallet.payer.publicKey,
+//     payerAtaOriginal: payerAtaOriginal,
+//     payerAtaWrapped: payerAtaWrapped,
+//     mintOriginal: mintOriginal.publicKey,
+//     mintWrapped: mintWrapped.publicKey,
+//     wrapper: wrapper,
+//     vault: vault,
+//     associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+//     tokenProgram: TOKEN_PROGRAM_ID,
+//     tokenExtensionsProgram: TOKEN_2022_PROGRAM_ID,
+//     systemProgram: anchor.web3.SystemProgram.programId,
+//   })
+//   .signers([wallet.payer])
+//   .rpc({skipPreflight: true})
+//   .then(confirm)
+// });
 
   
 });

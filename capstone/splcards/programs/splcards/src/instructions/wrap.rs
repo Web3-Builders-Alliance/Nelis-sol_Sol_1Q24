@@ -53,7 +53,7 @@ pub struct Wrap<'info> {
 }
 
 impl<'info> Wrap<'info> {
-    pub fn wrap(&mut self, amount: u64) -> Result<()> {
+    pub fn wrap(&mut self, amount: u64, bumps: &WrapBumps) -> Result<()> {
 
 
         // let cpi_accounts = TransferChecked {

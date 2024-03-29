@@ -4,11 +4,11 @@ pub use wrap::*;
 pub mod unwrap;
 pub use unwrap::*;
 
-pub mod transact;
-pub use transact::*;
+pub mod execute;
+pub use execute::*;
 
-pub mod user_policy;
-pub use user_policy::*;
+pub mod wallet_policy;
+pub use wallet_policy::*;
 
 pub mod token_policy;
 pub use token_policy::*;

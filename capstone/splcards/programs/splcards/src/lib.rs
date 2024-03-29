@@ -12,10 +12,10 @@ declare_id!("2FUFG2i7pQt3DyU8oA2reL91oDyYfXkh2KfNbWhsbTf2");
 pub mod splcards {
     use super::*;
 
-    /* 1. UserPolicy account instructions */ 
+    /* 1. WalletPolicy account instructions */ 
     
     // Create a User Policy account in one go
-    pub fn new_full_user_policy(ctx: Context<UserPolicyInstructions>, 
+    pub fn new_full_wallet_policy(ctx: Context<WalletPolicyInstructions>, 
         signer1: Option<Pubkey>,
         required_signer1: bool,
         signer2: Option<Pubkey>,
@@ -24,7 +24,7 @@ pub mod splcards {
         block_list: Vec<Pubkey>,
         spending_window: Option<[i64;2]>
     ) -> Result<()> {
-        ctx.accounts.new_full_user_policy(
+        ctx.accounts.new_full_wallet_policy(
             signer1,
             required_signer1,
             signer2,
@@ -37,52 +37,52 @@ pub mod splcards {
 
 
     // Create the most basic User Policy account and add rules/policies later on
-    pub fn new_user_policy(ctx: Context<UserPolicyInstructions>) -> Result<()> {
-        ctx.accounts.new_user_policy(&ctx.bumps)
+    pub fn new_wallet_policy(ctx: Context<WalletPolicyInstructions>) -> Result<()> {
+        ctx.accounts.new_wallet_policy(&ctx.bumps)
     }
 
-    pub fn add_signer1_to_user_policy(ctx: Context<UserPolicyInstructions>, signer1: Pubkey, required: bool) -> Result<()> {
-        ctx.accounts.add_signer1_to_user_policy(signer1, required)
+    pub fn add_signer1_to_wallet_policy(ctx: Context<WalletPolicyInstructions>, signer1: Pubkey, required: bool) -> Result<()> {
+        ctx.accounts.add_signer1_to_wallet_policy(signer1, required)
     }
 
-    pub fn remove_signer1_from_user_policy(ctx: Context<UserPolicyInstructions>) -> Result<()> {
-        ctx.accounts.remove_signer1_from_user_policy()
+    pub fn remove_signer1_from_wallet_policy(ctx: Context<WalletPolicyInstructions>) -> Result<()> {
+        ctx.accounts.remove_signer1_from_wallet_policy()
     }
 
-    pub fn add_signer2_to_user_policy(ctx: Context<UserPolicyInstructions>, signer2: Pubkey, required: bool) -> Result<()> {
-        ctx.accounts.add_signer2_to_user_policy(signer2, required)
+    pub fn add_signer2_to_wallet_policy(ctx: Context<WalletPolicyInstructions>, signer2: Pubkey, required: bool) -> Result<()> {
+        ctx.accounts.add_signer2_to_wallet_policy(signer2, required)
     }
 
-    pub fn remove_signer2_from_user_policy(ctx: Context<UserPolicyInstructions>) -> Result<()> {
-        ctx.accounts.remove_signer2_from_user_policy()
+    pub fn remove_signer2_from_wallet_policy(ctx: Context<WalletPolicyInstructions>) -> Result<()> {
+        ctx.accounts.remove_signer2_from_wallet_policy()
     }
 
-    pub fn add_allowed_publickeys_to_user_policy(ctx: Context<UserPolicyInstructions>, allowed_pubkey_list: Vec<Pubkey>) -> Result<()> {
-        ctx.accounts.add_allowed_publickeys_to_user_policy(allowed_pubkey_list)
+    pub fn add_allowed_publickeys_to_wallet_policy(ctx: Context<WalletPolicyInstructions>, allowed_pubkey_list: Vec<Pubkey>) -> Result<()> {
+        ctx.accounts.add_allowed_publickeys_to_wallet_policy(allowed_pubkey_list)
     }
 
-    pub fn remove_allowed_publickeys_from_user_policy(ctx: Context<UserPolicyInstructions>, remove_pubkey_list: Vec<Pubkey>) -> Result<()> {
-        ctx.accounts.remove_allowed_publickeys_to_user_policy(remove_pubkey_list)
+    pub fn remove_allowed_publickeys_from_wallet_policy(ctx: Context<WalletPolicyInstructions>, remove_pubkey_list: Vec<Pubkey>) -> Result<()> {
+        ctx.accounts.remove_allowed_publickeys_to_wallet_policy(remove_pubkey_list)
     }
 
-    pub fn add_blocked_publickeys_to_user_policy(ctx: Context<UserPolicyInstructions>, blocked_pubkey_list: Vec<Pubkey>) -> Result<()> {
-        ctx.accounts.add_blocked_publickeys_to_user_policy(blocked_pubkey_list)
+    pub fn add_blocked_publickeys_to_wallet_policy(ctx: Context<WalletPolicyInstructions>, blocked_pubkey_list: Vec<Pubkey>) -> Result<()> {
+        ctx.accounts.add_blocked_publickeys_to_wallet_policy(blocked_pubkey_list)
     }
 
-    pub fn remove_blocked_publickeys_from_user_policy(ctx: Context<UserPolicyInstructions>, remove_pubkey_list: Vec<Pubkey>) -> Result<()> {
-        ctx.accounts.remove_blocked_publickeys_to_user_policy(remove_pubkey_list)
+    pub fn remove_blocked_publickeys_from_wallet_policy(ctx: Context<WalletPolicyInstructions>, remove_pubkey_list: Vec<Pubkey>) -> Result<()> {
+        ctx.accounts.remove_blocked_publickeys_to_wallet_policy(remove_pubkey_list)
     }
 
-    pub fn add_spending_window_to_user_policy(ctx: Context<UserPolicyInstructions>, spending_window: [i64; 2]) -> Result<()> {
-        ctx.accounts.add_spending_window_to_user_policy(spending_window)
+    pub fn add_spending_window_to_wallet_policy(ctx: Context<WalletPolicyInstructions>, spending_window: [i64; 2]) -> Result<()> {
+        ctx.accounts.add_spending_window_to_wallet_policy(spending_window)
     }
 
-    pub fn remove_spending_window_from_user_policy(ctx: Context<UserPolicyInstructions>) -> Result<()> {
-        ctx.accounts.remove_spending_window_from_user_policy()
+    pub fn remove_spending_window_from_wallet_policy(ctx: Context<WalletPolicyInstructions>) -> Result<()> {
+        ctx.accounts.remove_spending_window_from_wallet_policy()
     }
 
-    pub fn delete_user_policy(ctx: Context<DeleteUserPolicy>) -> Result<()> {
-        ctx.accounts.delete_user_policy()
+    pub fn delete_wallet_policy(ctx: Context<DeleteWalletPolicy>) -> Result<()> {
+        ctx.accounts.delete_wallet_policy()
     }
 
 
@@ -135,7 +135,7 @@ pub mod splcards {
     /* 4. Wrapping instructions */ 
 
     pub fn wrap(ctx: Context<Wrap>, amount: u64) -> Result<()> {
-        ctx.accounts.wrap(amount)
+        ctx.accounts.wrap(amount, &ctx.bumps)
     }
 
     pub fn unwrap(ctx: Context<Unwrap>, amount: u64) -> Result<()> {
@@ -143,8 +143,8 @@ pub mod splcards {
     }
 
 
-    pub fn transact(ctx: Context<Transact>) -> Result<()> {
-        ctx.accounts.process_transaction(&ctx.bumps)
+    pub fn execute(ctx: Context<Execute>, amount: u64) -> Result<()> {
+        ctx.accounts.execute(amount)
     }
 
 

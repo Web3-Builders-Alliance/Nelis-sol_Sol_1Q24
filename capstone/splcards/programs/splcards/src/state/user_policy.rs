@@ -1,9 +1,9 @@
 use anchor_lang::prelude::*;
 
-use crate::error::UserPolicyErrorCodes;
+use crate::error::WalletPolicyErrorCodes;
 
 #[account]
-pub struct UserPolicyState {
+pub struct WalletPolicyState {
     pub authority: Pubkey,  // 32 bytes
     pub signer1: Option<Pubkey>,    // 32 bytes
     pub required_signer1: bool, // 1 byte
@@ -17,12 +17,12 @@ pub struct UserPolicyState {
 }
 
 
-impl Space for UserPolicyState {
+impl Space for WalletPolicyState {
     const INIT_SPACE: usize = 8 + 32 * 3 + 1 * 2 + 37 * 2 + 17 + 1 + 32 * 3;
 }
 
 
-impl UserPolicyState {
+impl WalletPolicyState {
 
     pub fn new(&mut self,
         authority: Pubkey,
@@ -139,24 +139,24 @@ impl UserPolicyState {
 
         // requires both signers if requires_signers is true
         if (self.required_signer1 && !signer1_is_signer) || (self.required_signer2 && !signer2_is_signer) {
-            return Err(UserPolicyErrorCodes::MissingRequiredSigners.into());
+            return Err(WalletPolicyErrorCodes::MissingRequiredSigners.into());
         }
 
         // block list
         if self.block_list.contains(&destination) {
-            return Err(UserPolicyErrorCodes::PubkeyInBlockList.into());
+            return Err(WalletPolicyErrorCodes::PubkeyInBlockList.into());
         }
 
         // allow list
         if !self.allow_list.contains(&destination) {
-            return Err(UserPolicyErrorCodes::PubkeyNotInAllowList.into());
+            return Err(WalletPolicyErrorCodes::PubkeyNotInAllowList.into());
         }
 
         // spending window
         if let Some([start, end]) = self.spending_window {
             if current_timestamp % 86400 < start % 86400 || current_timestamp % 86400 > end % 86400
             {
-                return Err(UserPolicyErrorCodes::SpendingWindowViolation.into());
+                return Err(WalletPolicyErrorCodes::SpendingWindowViolation.into());
             }
         }
 

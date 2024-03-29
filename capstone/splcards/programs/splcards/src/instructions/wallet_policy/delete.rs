@@ -1,24 +1,24 @@
 use anchor_lang::prelude::*;
-use crate::state::UserPolicyState;
+use crate::state::WalletPolicyState;
 use crate::constants::*;
 
 #[derive(Accounts)]
-pub struct DeleteUserPolicy<'info> {
+pub struct DeleteWalletPolicy<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
     #[account(
         mut,
         seeds = [SEED_USER_POLICY_ACCOUNT, payer.key().as_ref()],
-        bump = user_policy.bump,
+        bump = wallet_policy.bump,
         close=payer
       )]
-    pub user_policy: Account<'info, UserPolicyState>,
+    pub wallet_policy: Account<'info, WalletPolicyState>,
     pub system_program: Program<'info, System>,
 }
 
-impl<'info> DeleteUserPolicy<'info> {
+impl<'info> DeleteWalletPolicy<'info> {
 
-    pub fn delete_user_policy(&mut self) -> Result<()> {
+    pub fn delete_wallet_policy(&mut self) -> Result<()> {
         
         Ok(())
     }
