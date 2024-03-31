@@ -126,18 +126,41 @@ impl<'info> WrapperInstructions<'info> {
         let rent = &Rent::from_account_info(&self.rent.to_account_info())?;
         let lamports = rent.minimum_balance(size + extension_extra_space) * 4;
 
-        invoke(
-            &solana_program::system_instruction::create_account(
-                &self.payer.key(),
-                &self.mint_wrapped.key(),
-                lamports,
-                (size * 2).try_into().unwrap(),
-                &spl_token_2022::id(),
-            ),
-            &vec![
-                self.payer.to_account_info(),
-                self.mint_wrapped.to_account_info(),
-            ],
+        // invoke(
+        //     &solana_program::system_instruction::create_account(
+        //         &self.payer.key(),
+        //         &self.mint_wrapped.key(),
+        //         lamports,
+        //         (size * 2).try_into().unwrap(),
+        //         &spl_token_2022::id(),
+        //     ),
+        //     &vec![
+        //         self.payer.to_account_info(),
+        //         self.mint_wrapped.to_account_info(),
+        //     ],
+        // )?;
+
+        let mint_original_one = self.mint_original.key();
+        let signer_seeds_one: &[&[&[u8]]] = &[&[
+            SEED_WRAPPER_ACCOUNT,
+            &mint_original_one.as_ref(),
+            &[bumps.wrapper],
+        ]];
+
+        msg!("Mint_wrapped before Create Account: {:?}", self.mint_wrapped.to_account_info());
+
+        create_account(
+            CpiContext::new(
+                self.system_program.to_account_info(),
+                CreateAccount {
+                    from: self.payer.to_account_info(),
+                    to: self.mint_wrapped.to_account_info(),
+                },
+            )
+            .with_signer(signer_seeds_one),
+            lamports,
+            5000,
+            &self.token_program.key(),
         )?;
 
         msg!("Mint_wrapped after Create Account: {:?}", self.mint_wrapped.to_account_info());
@@ -191,7 +214,8 @@ impl<'info> WrapperInstructions<'info> {
         msg!("mint wrapped key: {}", self.mint_wrapped.key());
         msg!("mint original key: {}", self.mint_original.key());
         msg!("wrapper key: {}", self.wrapper.key());
-
+        
+                
         invoke_signed(
             &initialize_mint2(
                 &self.token_program.key(),
