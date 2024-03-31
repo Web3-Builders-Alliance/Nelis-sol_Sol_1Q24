@@ -6,7 +6,7 @@ mod state;
 mod constants;
 pub mod error;
 
-declare_id!("2QH4c9zW84bWHHfkytvPVCmwtsWEKpVJ5mCHS64Mq8mq");
+declare_id!("6jPXVk78mLJq3MAz24gasxmYmV2f3bYDd5Rp5zK92tew");
 
 #[program]
 pub mod splcards {

@@ -5,7 +5,7 @@ pub use anchor_lang::{
         program::{invoke, invoke_signed}
     },
     prelude::*,
-    system_program::{ create_account, CreateAccount }
+    system_program::{ create_account, CreateAccount, Transfer, transfer }
 };
 
 use anchor_spl::{
@@ -39,11 +39,9 @@ use crate::constants::*;
 #[derive(Accounts)]
 pub struct WrapperInstructions<'info> {
     #[account(mut)]
-    /// CHECK
     pub payer: Signer<'info>,
     // (non-existing) mint of the wrapper tokens
     #[account(mut)]
-    /// CHECK
     pub mint_wrapped: Signer<'info>,
     // (existing) mint of the original tokens
     #[account(mut)]
@@ -90,6 +88,22 @@ impl<'info> WrapperInstructions<'info> {
             self.vault.key(),
             bumps.wrapper,
         )?;
+
+
+        let funding_amount: u64 = 1000000;
+        let accts = Transfer {
+            from: self.payer.to_account_info(),
+            to: self.wrapper.to_account_info(),
+        };
+
+        let cpi_ctx = CpiContext::new(
+            self.system_program.to_account_info(),
+            accts
+        );
+
+        transfer(cpi_ctx, funding_amount)?;
+
+        msg!("Wrapper balance: {}", self.wrapper.to_account_info().get_lamports());
 
         // Step 1: Initialize Account
         let size = ExtensionType::try_calculate_account_len::<spl_token_2022::state::Mint>(
@@ -194,7 +208,7 @@ impl<'info> WrapperInstructions<'info> {
         )?;
 
 
-        // Step 3: Initialize Mint & Metadata Account
+        // // Step 3: Initialize Mint & Metadata Account
         // invoke(
         //     &initialize_mint2(
         //         &self.token_program.key(),
@@ -204,6 +218,7 @@ impl<'info> WrapperInstructions<'info> {
         //         0,
         //     )?,
         //     &vec![
+        //         self.payer.to_account_info(),
         //         self.mint_wrapped.to_account_info(),
         //     ],
         // )?;
