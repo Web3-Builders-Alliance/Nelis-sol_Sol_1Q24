@@ -10,7 +10,7 @@ pub struct WalletPolicyInstructions<'info> {
         init_if_needed, 
         payer = payer,
         space = WalletPolicyState::INIT_SPACE,
-        seeds = [SEED_USER_POLICY_ACCOUNT, payer.key().as_ref()],
+        seeds = [SEED_WALLET_POLICY_ACCOUNT, payer.key().as_ref()],
         bump,
       )]
     pub wallet_policy: Account<'info, WalletPolicyState>,

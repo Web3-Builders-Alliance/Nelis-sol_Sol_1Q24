@@ -1,14 +1,16 @@
+use anchor_lang::accounts::signer;
 pub use anchor_lang::{
     solana_program::{
         sysvar::rent::ID as RENT_ID,
         program::{invoke, invoke_signed}
     },
-    prelude::*
+    prelude::*,
+    system_program::{ create_account, CreateAccount }
 };
 
 use anchor_spl::{
     associated_token::AssociatedToken,
-    token_interface::{Mint, TokenAccount, Token2022},
+    token_interface::{Mint, TokenAccount, Token2022, InitializeMint2},
 };
 
 pub use spl_token_2022::{
@@ -25,6 +27,12 @@ pub use spl_token_metadata_interface::{
     instruction::{initialize as initialize_metadata_account, update_field as update_metadata_account},
 };
 
+pub use spl_tlv_account_resolution::{
+    account::ExtraAccountMeta, seeds::Seed, state::ExtraAccountMetaList,
+};
+
+pub use spl_transfer_hook_interface::instruction::{ExecuteInstruction, TransferHookInstruction};
+
 use crate::state::WrapperState;
 use crate::constants::*;
 
@@ -39,7 +47,7 @@ pub struct WrapperInstructions<'info> {
     pub mint_wrapped: Signer<'info>,
     // (existing) mint of the original tokens
     #[account(mut)]
-    pub mint_original: InterfaceAccount<'info, Mint>,
+    pub mint_original: Box<InterfaceAccount<'info, Mint>>,
     #[account(
         init_if_needed,
         payer = payer,
@@ -47,7 +55,7 @@ pub struct WrapperInstructions<'info> {
         seeds = [SEED_WRAPPER_ACCOUNT, mint_original.key().as_ref()],
         bump
     )]
-    pub wrapper: Account<'info, WrapperState>,
+    pub wrapper: Box<Account<'info, WrapperState>>,
     #[account(
         init_if_needed, 
         payer = payer,
@@ -56,7 +64,14 @@ pub struct WrapperInstructions<'info> {
         token::authority = wrapper,
         token::mint = mint_original
       )]
-    pub vault: InterfaceAccount<'info, TokenAccount>,
+    pub vault: Box<InterfaceAccount<'info, TokenAccount>>,
+    #[account(
+        mut,
+        seeds = [b"extra-account-metas", mint_wrapped.key().as_ref()],
+        bump
+    )]
+    /// CHECK: this is ok.
+    pub extra_account_meta_list: AccountInfo<'info>,
     /// CHECK: this is fine since we are hard coding the rent sysvar.
     pub rent: UncheckedAccount<'info>,
     pub associated_token_program: Program<'info, AssociatedToken>,
@@ -67,7 +82,7 @@ pub struct WrapperInstructions<'info> {
 
 impl<'info> WrapperInstructions<'info> {
     pub fn new_wrapper(&mut self, name: String, symbol: String, uri: String, bumps: &WrapperInstructionsBumps) -> Result<()> {
-        
+
         self.wrapper.new(
             symbol.clone(),
             self.mint_original.key(),
@@ -75,7 +90,6 @@ impl<'info> WrapperInstructions<'info> {
             self.vault.key(),
             bumps.wrapper,
         )?;
-
 
         // Step 1: Initialize Account
         let size = ExtensionType::try_calculate_account_len::<spl_token_2022::state::Mint>(
@@ -96,14 +110,14 @@ impl<'info> WrapperInstructions<'info> {
 
         let extension_extra_space = metadata.tlv_size_of().unwrap();
         let rent = &Rent::from_account_info(&self.rent.to_account_info())?;
-        let lamports = rent.minimum_balance(size + extension_extra_space);
+        let lamports = rent.minimum_balance(size + extension_extra_space) * 4;
 
         invoke(
             &solana_program::system_instruction::create_account(
                 &self.payer.key(),
                 &self.mint_wrapped.key(),
                 lamports,
-                size.try_into().unwrap(),
+                (size * 2).try_into().unwrap(),
                 &spl_token_2022::id(),
             ),
             &vec![
@@ -112,6 +126,8 @@ impl<'info> WrapperInstructions<'info> {
             ],
         )?;
 
+        msg!("Mint_wrapped after Create Account: {:?}", self.mint_wrapped.to_account_info());
+
 
         // 2.2: Transfer Hook,
         invoke(
@@ -119,7 +135,7 @@ impl<'info> WrapperInstructions<'info> {
                 &self.token_program.key(),
                 &self.mint_wrapped.key(),
                 Some(self.wrapper.key()),
-                None,  // TO-DO: Add Transfer Hook
+                Some(crate::ID),
             )?,
             &vec![
                 self.mint_wrapped.to_account_info(),
@@ -138,24 +154,29 @@ impl<'info> WrapperInstructions<'info> {
                 self.mint_wrapped.to_account_info(),
             ],
         )?;
-
-
-        // // sender, mint, receiver accounts are always present in transfer hook
-        // // amount is in the instructions
-
-        // // create a look up table to pass the user policy account
-        // // medium article
         
 
         // Step 3: Initialize Mint & Metadata Account
 
-        let mint_original = self.mint_original.to_account_info().key().clone();
+        let mint_original = self.mint_original.key().clone();
 
-        let signer_seeds: [&[&[u8]];1] = [&[
-            SEED_WRAPPER_ACCOUNT, 
+        // let (pda, bump) = Pubkey::find_program_address(
+        //     &[SEED_WRAPPER_ACCOUNT, mint_original.as_ref()],
+        //     &crate::ID, // This is the public key of your program.
+        // );
+
+
+        let seeds: &[&[u8]; 3] = &[
+            SEED_WRAPPER_ACCOUNT,
             mint_original.as_ref(),
             &[bumps.wrapper],
-        ]];
+        ];
+        let signer_seeds = [&seeds[..]];
+
+        msg!("token program key: {}", self.token_program.key());
+        msg!("mint wrapped key: {}", self.mint_wrapped.key());
+        msg!("mint original key: {}", self.mint_original.key());
+        msg!("wrapper key: {}", self.wrapper.key());
 
         invoke_signed(
             &initialize_mint2(
@@ -166,36 +187,107 @@ impl<'info> WrapperInstructions<'info> {
                 self.mint_original.decimals,
             )?,
             &vec![
-                self.mint_wrapped.to_account_info(),
                 self.wrapper.to_account_info(),
-                self.payer.to_account_info(),
+                self.mint_wrapped.to_account_info(),
             ],
             &signer_seeds
         )?;
 
 
-        // invoke_signed(
-        //     &initialize_metadata_account(
+        // Step 3: Initialize Mint & Metadata Account
+        // invoke(
+        //     &initialize_mint2(
         //         &self.token_program.key(),
         //         &self.mint_wrapped.key(),
-        //         &self.wrapper.key(),
-        //         &self.mint_wrapped.key(),
         //         &self.payer.key(),
-        //         name.clone(),
-        //         symbol,
-        //         uri.clone(),
-        //     ),
+        //         None,
+        //         0,
+        //     )?,
         //     &vec![
         //         self.mint_wrapped.to_account_info(),
-        //         self.wrapper.to_account_info(),
-        //         self.payer.to_account_info(),
         //     ],
-        //     &signer_seeds
         // )?;
 
 
-        Ok(())
+        invoke_signed(
+            &initialize_metadata_account(
+                &self.token_program.key(),
+                &self.mint_wrapped.key(),
+                &self.wrapper.key(),
+                &self.mint_wrapped.key(),
+                &self.wrapper.key(),
+                name.clone(),
+                symbol,
+                uri.clone(),
+            ),
+            &vec![
+                self.mint_wrapped.to_account_info(),
+                self.wrapper.to_account_info(),
+            ],
+            &signer_seeds
+        )?;
 
+
+
+        ////////// meta list accounts
+
+        // index 0-3 are the accounts required for token transfer (source, mint, destination, owner)
+        // index 4 is address of ExtraAccountMetaList account
+        let account_metas = vec![
+        // index 5, vesting_account
+        ExtraAccountMeta::new_with_seeds(
+            &[
+                Seed::Literal { bytes: SEED_WALLET_POLICY_ACCOUNT.to_vec() },
+                Seed::AccountKey { index: 3 }
+            ],
+            false, // is_signer
+            true,  // is_writable
+        )?,
+        ExtraAccountMeta::new_with_seeds(
+            &[
+                Seed::Literal { bytes: SEED_TOKEN_POLICY_ACCOUNT.to_vec() },
+                Seed::AccountKey { index: 3 }
+            ],
+            false, // is_signer
+            true,  // is_writable
+        )?,
+        ];
+    
+        // calculate account size
+        let account_size = ExtraAccountMetaList::size_of(account_metas.len())? as u64;
+        // calculate minimum required lamports
+        let lamports = Rent::get()?.minimum_balance(account_size as usize);
+    
+        let mint_wrapped = self.mint_wrapped.key();
+        let signer_seeds: &[&[&[u8]]] = &[&[
+            b"extra-account-metas",
+            mint_wrapped.as_ref(),
+            &[bumps.extra_account_meta_list],
+        ]];
+
+
+        // create ExtraAccountMetaList account
+        create_account(
+            CpiContext::new(
+                self.system_program.to_account_info(),
+                CreateAccount {
+                    from: self.payer.to_account_info(),
+                    to: self.extra_account_meta_list.to_account_info(),
+                },
+            )
+            .with_signer(signer_seeds),
+            lamports,
+            account_size,
+            &crate::ID,
+        )?;
+    
+        // initialize ExtraAccountMetaList account with extra accounts
+        ExtraAccountMetaList::init::<ExecuteInstruction>(
+            &mut self.extra_account_meta_list.try_borrow_mut_data()?,
+            &account_metas,
+        )?;
+
+        Ok(())
 
     }
 

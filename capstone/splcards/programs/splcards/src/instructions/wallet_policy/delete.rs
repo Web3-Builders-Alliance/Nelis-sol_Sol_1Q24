@@ -8,7 +8,7 @@ pub struct DeleteWalletPolicy<'info> {
     pub payer: Signer<'info>,
     #[account(
         mut,
-        seeds = [SEED_USER_POLICY_ACCOUNT, payer.key().as_ref()],
+        seeds = [SEED_WALLET_POLICY_ACCOUNT, payer.key().as_ref()],
         bump = wallet_policy.bump,
         close=payer
       )]

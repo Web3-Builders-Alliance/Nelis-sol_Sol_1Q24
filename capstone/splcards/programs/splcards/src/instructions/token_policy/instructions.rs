@@ -8,12 +8,12 @@ pub struct TokenPolicyInstructions<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
     // Mint of the token account
-    pub mint: InterfaceAccount<'info, Mint>,
+    pub mint_wrapped: InterfaceAccount<'info, Mint>,
     #[account(
         init_if_needed, 
         payer = payer,
         space = TokenPolicyState::INIT_SPACE,
-        seeds = [SEED_TOKEN_POLICY_ACCOUNT, payer.key().as_ref(), mint.key().as_ref()],
+        seeds = [SEED_TOKEN_POLICY_ACCOUNT, payer.key().as_ref(), mint_wrapped.key().as_ref()],
         bump,
       )]
     pub token_policy: Account<'info, TokenPolicyState>,
@@ -26,7 +26,7 @@ impl<'info> TokenPolicyInstructions<'info> {
         
         self.token_policy.new(
             self.payer.key(),
-            self.mint.key(),
+            self.mint_wrapped.key(),
             bumps.token_policy,
         )?;
         Ok(())
@@ -38,7 +38,7 @@ impl<'info> TokenPolicyInstructions<'info> {
         
         self.token_policy.new_full(
             self.payer.key(),
-            self.mint.key(),
+            self.mint_wrapped.key(),
             spend_limit_amount,
             bumps.token_policy,
         )?;

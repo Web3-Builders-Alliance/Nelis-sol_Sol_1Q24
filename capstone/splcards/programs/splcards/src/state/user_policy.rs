@@ -130,7 +130,7 @@ impl WalletPolicyState {
 
 
     pub fn check_compliance(
-        &mut self,
+        self,
         signer1_is_signer: bool,
         signer2_is_signer: bool,
         destination: Pubkey,

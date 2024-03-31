@@ -1,5 +1,6 @@
 use anchor_lang::prelude::*;
 
+use crate::error::WalletPolicyErrorCodes;
 
 #[account]
 pub struct TokenPolicyState {
@@ -9,7 +10,6 @@ pub struct TokenPolicyState {
     pub spend_limit_amount: Option<u64>,    // 1 + 8 = 9 bytes
     pub bump: u8,   // 1 byte
 }
-
 
 impl Space for TokenPolicyState {
     const INIT_SPACE: usize = 8 + 32 * 2 + 16 + 9 + 1;
@@ -63,8 +63,38 @@ impl TokenPolicyState {
     }
 
     
-    pub fn check_compliance() -> Result<()> {
-        unimplemented!()
+    pub fn check_compliance(&self,
+        amount: u64,
+        signer1: bool,
+        signer2: bool,
+        current_timestamp: i64,
+    ) -> Result<()> {
+
+        if let Some(spend_limit_amount) = self.spend_limit_amount {
+            // get start of today timestamp
+            let today_timestamp = current_timestamp - (current_timestamp % 86400);
+
+            // check if the amount spent in the last 24 hours is greater than the spend limit
+            if self.spent_last_24[0] == today_timestamp {
+                if self.spent_last_24[1] + amount as i64 > spend_limit_amount as i64 {
+                    if !signer1 && !signer2 {
+                        return Err(WalletPolicyErrorCodes::SpendLimitExceeded.into());
+                    }
+                }
+                // Problem: self is not mutable due to transfer hooks - self.spent_last_24[1] += amount as i64;
+            } else {
+                if amount > spend_limit_amount {
+                    if !signer1 && !signer2 {
+                        return Err(WalletPolicyErrorCodes::SpendLimitExceeded.into());
+                    }
+                }
+                // Problem: self is not mutable due to transfer hooks - self.spent_last_24[0] = today_timestamp;
+                // Problem: self is not mutable due to transfer hooks - self.spent_last_24[1] = amount as i64;
+            }
+        }
+
+        Ok(())
+
     }
 
 }

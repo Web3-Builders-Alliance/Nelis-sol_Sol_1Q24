@@ -6,7 +6,7 @@ mod state;
 mod constants;
 pub mod error;
 
-declare_id!("2FUFG2i7pQt3DyU8oA2reL91oDyYfXkh2KfNbWhsbTf2");
+declare_id!("2QH4c9zW84bWHHfkytvPVCmwtsWEKpVJ5mCHS64Mq8mq");
 
 #[program]
 pub mod splcards {
@@ -143,8 +143,9 @@ pub mod splcards {
     }
 
 
-    pub fn execute(ctx: Context<Execute>, amount: u64) -> Result<()> {
-        ctx.accounts.execute(amount)
+    pub fn transfer_hook(ctx: Context<TransferHook>, amount: u64) -> Result<()> {
+        msg!("BBBBBBBBBBBBBBBBBBB");
+        ctx.accounts.transfer_hook(amount)
     }
 
 
