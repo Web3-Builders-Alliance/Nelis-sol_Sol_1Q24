@@ -124,46 +124,46 @@ impl<'info> WrapperInstructions<'info> {
 
         let extension_extra_space = metadata.tlv_size_of().unwrap();
         let rent = &Rent::from_account_info(&self.rent.to_account_info())?;
-        let lamports = rent.minimum_balance(size + extension_extra_space) * 4;
+        let lamports = rent.minimum_balance(size + extension_extra_space);
 
-        // invoke(
-        //     &solana_program::system_instruction::create_account(
-        //         &self.payer.key(),
-        //         &self.mint_wrapped.key(),
-        //         lamports,
-        //         (size * 2).try_into().unwrap(),
-        //         &spl_token_2022::id(),
-        //     ),
-        //     &vec![
-        //         self.payer.to_account_info(),
-        //         self.mint_wrapped.to_account_info(),
-        //     ],
-        // )?;
-
-        let mint_original_one = self.mint_original.key();
-        let signer_seeds_one: &[&[&[u8]]] = &[&[
-            SEED_WRAPPER_ACCOUNT,
-            &mint_original_one.as_ref(),
-            &[bumps.wrapper],
-        ]];
-
-        msg!("Mint_wrapped before Create Account: {:?}", self.mint_wrapped.to_account_info());
-
-        create_account(
-            CpiContext::new(
-                self.system_program.to_account_info(),
-                CreateAccount {
-                    from: self.payer.to_account_info(),
-                    to: self.mint_wrapped.to_account_info(),
-                },
-            )
-            .with_signer(signer_seeds_one),
-            lamports,
-            5000,
-            &self.token_program.key(),
+        invoke(
+            &solana_program::system_instruction::create_account(
+                &self.payer.key(),
+                &self.mint_wrapped.key(),
+                lamports,
+                (size).try_into().unwrap(),
+                &spl_token_2022::id(),
+            ),
+            &vec![
+                self.payer.to_account_info(),
+                self.mint_wrapped.to_account_info(),
+            ],
         )?;
 
-        msg!("Mint_wrapped after Create Account: {:?}", self.mint_wrapped.to_account_info());
+        // let mint_original_one = self.mint_original.key();
+        // let signer_seeds_one: &[&[&[u8]]] = &[&[
+        //     SEED_WRAPPER_ACCOUNT,
+        //     &mint_original_one.as_ref(),
+        //     &[bumps.wrapper],
+        // ]];
+
+        // msg!("Mint_wrapped before Create Account: {:?}", self.mint_wrapped.to_account_info());
+
+        // create_account(
+        //     CpiContext::new(
+        //         self.system_program.to_account_info(),
+        //         CreateAccount {
+        //             from: self.payer.to_account_info(),
+        //             to: self.mint_wrapped.to_account_info(),
+        //         },
+        //     )
+        //     .with_signer(signer_seeds_one),
+        //     lamports,
+        //     5000,
+        //     &self.token_program.key(),
+        // )?;
+
+        // msg!("Mint_wrapped after Create Account: {:?}", self.mint_wrapped.to_account_info());
 
 
         // 2.2: Transfer Hook,
