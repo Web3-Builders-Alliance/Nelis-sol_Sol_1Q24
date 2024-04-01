@@ -11,6 +11,8 @@ use crate::{
     state::TokenPolicyState,
 };
 
+use crate::error::WalletPolicyErrorCodes;
+
 
 #[derive(Accounts)]
 pub struct TransferHook<'info> {
@@ -51,52 +53,54 @@ pub struct TransferHook<'info> {
 impl<'info> TransferHook<'info> {
     pub fn transfer_hook(&mut self, amount: u64) -> Result<()> {
 
-        msg!("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA transfer hook triggered!");
+        return Err(WalletPolicyErrorCodes::PubkeyNotInAllowList.into());
 
-        let wallet_policy_info = self.wallet_policy.to_account_info();
-        let wallet_policy_data = wallet_policy_info.try_borrow_mut_data()?;
+        // msg!("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA transfer hook triggered!");
 
-        // Try and Deserialize the Account, if it deserialize then we know that the sender has a wallet policy account and we should check it.
-        match  WalletPolicyState::try_deserialize(&mut &wallet_policy_data[..]) {
-            Ok(wallet_policy) => {
+        // let wallet_policy_info = self.wallet_policy.to_account_info();
+        // let wallet_policy_data = wallet_policy_info.try_borrow_mut_data()?;
 
-                let current_time = Clock::get()?.unix_timestamp;
+        // // Try and Deserialize the Account, if it deserialize then we know that the sender has a wallet policy account and we should check it.
+        // match  WalletPolicyState::try_deserialize(&mut &wallet_policy_data[..]) {
+        //     Ok(wallet_policy) => {
 
-                wallet_policy.check_compliance(
-                    true, // signer 1 - hardcoded for now
-                    true, // signer 2 - hardcoded for now
-                    self.destination_token.owner, 
-                    current_time
-                )?;
+        //         let current_time = Clock::get()?.unix_timestamp;
 
-            },
-            Err(_) => {
-                msg!("No wallet policy available")
-            }
-        }
+        //         wallet_policy.check_compliance(
+        //             true, // signer 1 - hardcoded for now
+        //             true, // signer 2 - hardcoded for now
+        //             self.destination_token.owner, 
+        //             current_time
+        //         )?;
 
-        let token_policy_info = self.token_policy.to_account_info();
-        let token_policy_data = token_policy_info.try_borrow_mut_data()?;
+        //     },
+        //     Err(_) => {
+        //         msg!("No wallet policy available")
+        //     }
+        // }
+
+        // let token_policy_info = self.token_policy.to_account_info();
+        // let token_policy_data = token_policy_info.try_borrow_mut_data()?;
 
 
-        // Try and Deserialize the Account, if it deserialize then we know that the sender has a wallet policy account and we should check it.
-        match  TokenPolicyState::try_deserialize(&mut &token_policy_data[..]) {
-            Ok(token_policy) => {
+        // // Try and Deserialize the Account, if it deserialize then we know that the sender has a wallet policy account and we should check it.
+        // match  TokenPolicyState::try_deserialize(&mut &token_policy_data[..]) {
+        //     Ok(token_policy) => {
 
-                let current_time = Clock::get()?.unix_timestamp;
+        //         let current_time = Clock::get()?.unix_timestamp;
 
-                token_policy.check_compliance(
-                    amount,
-                    true, // signer 1 - hardcoded for now
-                    true, // signer 2 - hardcoded for now
-                    current_time
-                )?;
+        //         token_policy.check_compliance(
+        //             amount,
+        //             true, // signer 1 - hardcoded for now
+        //             true, // signer 2 - hardcoded for now
+        //             current_time
+        //         )?;
 
-            },
-            Err(_) => {
-                msg!("No token policy available")
-            }
-        }
+        //     },
+        //     Err(_) => {
+        //         msg!("No token policy available")
+        //     }
+        // }
 
 
         Ok(())

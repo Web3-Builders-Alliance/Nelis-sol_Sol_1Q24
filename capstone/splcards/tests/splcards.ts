@@ -665,89 +665,89 @@ const payerAtaWrapped = getAssociatedTokenAddressSync(
 
 
 
-//   // UPDATE WRAPPER SYMBOL
-//   it("Update wrapper symbol", async () => {
+  // UPDATE WRAPPER SYMBOL
+  it("Update wrapper symbol", async () => {
 
-//     const tx = await program.methods.updateWrapper(
-//       "BONK"
-//     )
-//     .accounts({
-//       payer: wallet.payer.publicKey,
-//       mintWrapped: mintWrapped.publicKey,
-//       mintOriginal: mintOriginal.publicKey,
-//       wrapper: wrapper,
-//       vault: vault,
-//       extraAccountMetaList: extra_account_meta_list,
-//       rent: SYSVAR_RENT_PUBKEY,
-//       systemProgram: anchor.web3.SystemProgram.programId,
-//       associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-//       tokenProgram: TOKEN_2022_PROGRAM_ID,
-//     })
-//     .signers([wallet.payer, mintWrapped])
-//     .rpc()
-//     .then(confirm)
-//     // .then(log_wrapper)
-//     .then(log_tx);
+    const tx = await program.methods.updateWrapper(
+      "BONK"
+    )
+    .accounts({
+      payer: wallet.payer.publicKey,
+      mintWrapped: mintWrapped.publicKey,
+      mintOriginal: mintOriginal.publicKey,
+      wrapper: wrapper,
+      vault: vault,
+      extraAccountMetaList: extra_account_meta_list,
+      rent: SYSVAR_RENT_PUBKEY,
+      systemProgram: anchor.web3.SystemProgram.programId,
+      associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+      tokenProgram: TOKEN_2022_PROGRAM_ID,
+    })
+    .signers([wallet.payer, mintWrapped])
+    .rpc()
+    .then(confirm)
+    // .then(log_wrapper)
+    .then(log_tx);
 
-//   });
+  });
 
 
 // console.log(payerAtaOriginal.toString());
 
-//  // WRAP TOKEN
-// it("Wrap token", async () => {
+ // WRAP TOKEN
+it("Wrap token", async () => {
 
-//   const tx = await program.methods.wrap(
-//       new anchor.BN(100)
-//   )
-//   .accounts({
-//     payer: wallet.payer.publicKey,
-//     payerAtaOriginal: payerAtaOriginal,
-//     payerAtaWrapped: payerAtaWrapped,
-//     mintOriginal: mintOriginal.publicKey,
-//     mintWrapped: mintWrapped.publicKey,
-//     wrapper: wrapper,
-//     vault: vault,
-//     associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-//     // REMEMBER TO SWITCH THIS UP if you use a Natvie Mint as original Token
-//     tokenProgram: TOKEN_2022_PROGRAM_ID,
-//     tokenExtensionsProgram: TOKEN_2022_PROGRAM_ID,
-//     systemProgram: anchor.web3.SystemProgram.programId,
-//   })
-//   .signers([wallet.payer])
-//   .rpc({skipPreflight: true})
-//   .then(confirm)
-//   .then(log_tx);
-// });
+  const tx = await program.methods.wrap(
+      new anchor.BN(100)
+  )
+  .accounts({
+    payer: wallet.payer.publicKey,
+    payerAtaOriginal: payerAtaOriginal,
+    payerAtaWrapped: payerAtaWrapped,
+    mintOriginal: mintOriginal.publicKey,
+    mintWrapped: mintWrapped.publicKey,
+    wrapper: wrapper,
+    vault: vault,
+    associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+    // REMEMBER TO SWITCH THIS UP if you use a Natvie Mint as original Token
+    tokenProgram: TOKEN_2022_PROGRAM_ID,
+    tokenExtensionsProgram: TOKEN_2022_PROGRAM_ID,
+    systemProgram: anchor.web3.SystemProgram.programId,
+  })
+  .signers([wallet.payer])
+  .rpc({skipPreflight: true})
+  .then(confirm)
+  .then(log_tx);
+});
 
 
-//   it("Transfer Hook with Extra Account Meta", async () => {
+  it("Transfer Hook with Extra Account Meta", async () => {
 
-//     let amount = BigInt(2);
+    let amount = BigInt(2);
 
-//     let transferInstructionWithHelper = await createTransferCheckedWithTransferHookInstruction( 
-//       connection,
-//       payerAtaWrapped,
-//       mintWrapped.publicKey,
-//       payerAtaWrapped,
-//       wallet.publicKey,
-//       amount,
-//       decimals,
-//       [],
-//       "confirmed",
-//       TOKEN_2022_PROGRAM_ID,
-//     );
+    let transferInstructionWithHelper = await createTransferCheckedWithTransferHookInstruction( 
+      connection,
+      payerAtaWrapped,
+      mintWrapped.publicKey,
+      payerAtaWrapped,
+      wallet.publicKey,
+      amount,
+      decimals,
+      [],
+      "confirmed",
+      TOKEN_2022_PROGRAM_ID,
+    );
 
-//     let tx = new Transaction().add(transferInstructionWithHelper);
+    let tx = new Transaction().add(transferInstructionWithHelper);
 
-//     const txSig = await sendAndConfirmTransaction(
-//       connection,
-//       tx,
-//       [wallet.payer],
-//       { skipPreflight: true, commitment: "confirmed"}
-//     );
-//     console.log("This is the token transfer:", txSig);
+    const txSig = await sendAndConfirmTransaction(
+      connection,
+      tx,
+      [wallet.payer],
+      { skipPreflight: true, commitment: "confirmed"}
+    );
+    console.log("This is the token transfer:", txSig);
 
-//   });
+  });
   
 });

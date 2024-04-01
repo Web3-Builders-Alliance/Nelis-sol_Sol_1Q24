@@ -8,6 +8,8 @@ pub use anchor_lang::{
     system_program::{ create_account, CreateAccount, Transfer, transfer }
 };
 
+use solana_program::program_pack::Pack;
+
 use anchor_spl::{
     associated_token::AssociatedToken,
     token_interface::{Mint, TokenAccount, Token2022, InitializeMint2},
@@ -20,6 +22,7 @@ pub use spl_token_2022::{
         transfer_hook::instruction::initialize as intialize_transfer_hook,
         metadata_pointer::instruction::initialize as initialize_metadata_pointer,
     },
+    state::Mint as SplMint,
 };
 
 pub use spl_token_metadata_interface::{
@@ -140,31 +143,6 @@ impl<'info> WrapperInstructions<'info> {
             ],
         )?;
 
-        // let mint_original_one = self.mint_original.key();
-        // let signer_seeds_one: &[&[&[u8]]] = &[&[
-        //     SEED_WRAPPER_ACCOUNT,
-        //     &mint_original_one.as_ref(),
-        //     &[bumps.wrapper],
-        // ]];
-
-        // msg!("Mint_wrapped before Create Account: {:?}", self.mint_wrapped.to_account_info());
-
-        // create_account(
-        //     CpiContext::new(
-        //         self.system_program.to_account_info(),
-        //         CreateAccount {
-        //             from: self.payer.to_account_info(),
-        //             to: self.mint_wrapped.to_account_info(),
-        //         },
-        //     )
-        //     .with_signer(signer_seeds_one),
-        //     lamports,
-        //     5000,
-        //     &self.token_program.key(),
-        // )?;
-
-        // msg!("Mint_wrapped after Create Account: {:?}", self.mint_wrapped.to_account_info());
-
 
         // 2.2: Transfer Hook,
         invoke(
@@ -209,11 +187,6 @@ impl<'info> WrapperInstructions<'info> {
             &[bumps.wrapper],
         ];
         let signer_seeds = [&seeds[..]];
-
-        msg!("token program key: {}", self.token_program.key());
-        msg!("mint wrapped key: {}", self.mint_wrapped.key());
-        msg!("mint original key: {}", self.mint_original.key());
-        msg!("wrapper key: {}", self.wrapper.key());
         
                 
         invoke_signed(
@@ -230,22 +203,6 @@ impl<'info> WrapperInstructions<'info> {
             ],
             &signer_seeds
         )?;
-
-
-        // // Step 3: Initialize Mint & Metadata Account
-        // invoke(
-        //     &initialize_mint2(
-        //         &self.token_program.key(),
-        //         &self.mint_wrapped.key(),
-        //         &self.payer.key(),
-        //         None,
-        //         0,
-        //     )?,
-        //     &vec![
-        //         self.payer.to_account_info(),
-        //         self.mint_wrapped.to_account_info(),
-        //     ],
-        // )?;
 
 
         invoke_signed(
@@ -266,9 +223,6 @@ impl<'info> WrapperInstructions<'info> {
             &signer_seeds
         )?;
 
-
-
-        ////////// meta list accounts
 
         // index 0-3 are the accounts required for token transfer (source, mint, destination, owner)
         // index 4 is address of ExtraAccountMetaList account
@@ -325,6 +279,7 @@ impl<'info> WrapperInstructions<'info> {
             &mut self.extra_account_meta_list.try_borrow_mut_data()?,
             &account_metas,
         )?;
+
 
         Ok(())
 
