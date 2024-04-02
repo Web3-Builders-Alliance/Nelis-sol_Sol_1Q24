@@ -2,6 +2,7 @@ use anchor_lang::prelude::*;
 
 use crate::error::WalletPolicyErrorCodes;
 
+
 #[account]
 pub struct TokenPolicyState {
     pub authority: Pubkey, // 32 bytes
@@ -98,3 +99,4 @@ impl TokenPolicyState {
     }
 
 }
+

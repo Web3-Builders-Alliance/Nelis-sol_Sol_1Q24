@@ -22,6 +22,7 @@ import {
   createTransferCheckedInstruction,
   getAssociatedTokenAddressSync,
   createAssociatedTokenAccountIdempotentInstruction,
+  getOrCreateAssociatedTokenAccount,
   createMint,
   MINT_SIZE,
   createTransferCheckedWithTransferHookInstruction,
@@ -81,6 +82,9 @@ const payerAtaWrapped = getAssociatedTokenAddressSync(
 );
 
 
+
+
+
   const random_pubkey1 = Keypair.generate().publicKey;
   const random_pubkey2 = Keypair.generate().publicKey;
   const random_pubkey3 = Keypair.generate().publicKey;
@@ -114,24 +118,24 @@ const payerAtaWrapped = getAssociatedTokenAddressSync(
     console.log(token_policy_log);
   }
 
-    // Log data from from the user policy PDA
+    // Log data from from the wallet policy PDA
   // remove console.log() to shut down the logs
   const log_token_policy = async () => {
-    const token_policy_log = await program.account.tokenPolicyState.fetch(token_policy_pda);
+    const token_policy_log = await program.account.tokenPolicyState.fetch(tokenPolicyPDA);
     console.log(token_policy_log);
   }
 
-    // Log data from from the user policy PDA
+    // Log data from from the wallet policy PDA
   // remove console.log() to shut down the logs
   const log_wallet_policy = async () => {
-    const wallet_policy_log = await program.account.walletPolicyState.fetch(wallet_policy_pda);
+    const wallet_policy_log = await program.account.walletPolicyState.fetch(walletPolicyPDA);
     console.log(wallet_policy_log);
   }
 
 
 
   // UserPolicy constant
-  const token_policy_pda = PublicKey.findProgramAddressSync(
+  const tokenPolicyPDA = PublicKey.findProgramAddressSync(
     [
       Buffer.from("token-policy"),
       program.provider.publicKey.toBuffer(),
@@ -142,10 +146,10 @@ const payerAtaWrapped = getAssociatedTokenAddressSync(
 
 
   // WalletPolicy constant
-  const wallet_policy_pda = PublicKey.findProgramAddressSync(
+  const walletPolicyPDA = PublicKey.findProgramAddressSync(
     [
       Buffer.from("wallet-policy"),
-      program.provider.publicKey.toBuffer(),
+      program.provider.publicKey.toBuffer()
     ],
     program.programId,
   )[0];
@@ -158,10 +162,9 @@ const payerAtaWrapped = getAssociatedTokenAddressSync(
 
 
 
-
-
-
   it("Create Mint Account", async () => {
+
+
     const lamports = await provider.connection.getMinimumBalanceForRentExemption(MINT_SIZE);
   
     const transaction = new Transaction().add(
@@ -278,13 +281,13 @@ const payerAtaWrapped = getAssociatedTokenAddressSync(
     )
     .accounts({
       mintWrapped: mintWrapped.publicKey,
-      tokenPolicy: token_policy_pda,
+      tokenPolicy: tokenPolicyPDA,
       systemProgram: anchor.web3.SystemProgram.programId,
     })
     .rpc()
     .then(confirm)
-    // .then(log_token_policy)
-    .then(log_tx);
+    .then(log_token_policy);
+    // .then(log_tx);
 
   });
 
@@ -295,7 +298,7 @@ const payerAtaWrapped = getAssociatedTokenAddressSync(
     const tx = await program.methods.deleteTokenPolicy()
     .accounts({
       mint: mintWrapped.publicKey,
-      tokenPolicy: token_policy_pda,
+      tokenPolicy: tokenPolicyPDA,
       systemProgram: anchor.web3.SystemProgram.programId,
     })
     .rpc()
@@ -312,7 +315,7 @@ const payerAtaWrapped = getAssociatedTokenAddressSync(
     const tx = await program.methods.newTokenPolicy()
     .accounts({
       mintWrapped: mintWrapped.publicKey,
-      tokenPolicy: token_policy_pda,
+      tokenPolicy: tokenPolicyPDA,
       systemProgram: anchor.web3.SystemProgram.programId,
     })
     .rpc()
@@ -327,11 +330,11 @@ const payerAtaWrapped = getAssociatedTokenAddressSync(
   it("Add spend limit to Token Policy", async () => {
 
     const tx = await program.methods.addSpendLimitToTokenPolicy(
-      new anchor.BN(10000)
+      new anchor.BN(1)
     )
     .accounts({
       mintWrapped: mintWrapped.publicKey,
-      tokenPolicy: token_policy_pda,
+      tokenPolicy: tokenPolicyPDA,
       systemProgram: anchor.web3.SystemProgram.programId,
     })
     .rpc()
@@ -348,7 +351,7 @@ const payerAtaWrapped = getAssociatedTokenAddressSync(
     const tx = await program.methods.removeSpendLimitFromTokenPolicy()
     .accounts({
       mintWrapped: mintWrapped.publicKey,
-      tokenPolicy: token_policy_pda,
+      tokenPolicy: tokenPolicyPDA,
       systemProgram: anchor.web3.SystemProgram.programId,
     })
     .rpc()
@@ -372,10 +375,9 @@ const payerAtaWrapped = getAssociatedTokenAddressSync(
         allow_list,
         block_list,
         spending_window
-
     )
     .accounts({
-      walletPolicy: wallet_policy_pda,
+      walletPolicy: walletPolicyPDA,
       systemProgram: anchor.web3.SystemProgram.programId,
     })
     .rpc()
@@ -391,7 +393,7 @@ const payerAtaWrapped = getAssociatedTokenAddressSync(
 
     const tx = await program.methods.deleteWalletPolicy()
     .accounts({
-      walletPolicy: wallet_policy_pda,
+      walletPolicy: walletPolicyPDA,
       systemProgram: anchor.web3.SystemProgram.programId,
     })
     .rpc()
@@ -406,7 +408,7 @@ const payerAtaWrapped = getAssociatedTokenAddressSync(
 
     const tx = await program.methods.newWalletPolicy()
     .accounts({
-      walletPolicy: wallet_policy_pda,
+      walletPolicy: walletPolicyPDA,
       systemProgram: anchor.web3.SystemProgram.programId,
     })
     .rpc()
@@ -418,14 +420,14 @@ const payerAtaWrapped = getAssociatedTokenAddressSync(
 
 
   // ADD SIGNER1 TO USER POLICY with REQUIRE FALSE
-  it("Add signer1 to user policy require false", async () => {
+  it("Add signer1 to wallet policy require false", async () => {
 
     const tx = await program.methods.addSigner1ToWalletPolicy(
       signer1.publicKey,
       false
     )
     .accounts({
-      walletPolicy: wallet_policy_pda,
+      walletPolicy: walletPolicyPDA,
       systemProgram: anchor.web3.SystemProgram.programId,
     })
     .rpc()
@@ -437,11 +439,11 @@ const payerAtaWrapped = getAssociatedTokenAddressSync(
 
 
     // REMOVE SIGNER1 FROM USER POLICY
-    it("Remove signer1 from user policy", async () => {
+    it("Remove signer1 from wallet policy", async () => {
 
         const tx = await program.methods.removeSigner1FromWalletPolicy()
         .accounts({
-        walletPolicy: wallet_policy_pda,
+        walletPolicy: walletPolicyPDA,
         systemProgram: anchor.web3.SystemProgram.programId,
         })
         .rpc()
@@ -453,14 +455,14 @@ const payerAtaWrapped = getAssociatedTokenAddressSync(
 
 
   // ADD SIGNER1 TO USER POLICY with REQUIRE TRUE
-  it("Add signer1 to user policy require true", async () => {
+  it("Add signer1 to wallet policy require true", async () => {
 
     const tx = await program.methods.addSigner1ToWalletPolicy(
       signer1.publicKey,
       true
     )
     .accounts({
-      walletPolicy: wallet_policy_pda,
+      walletPolicy: walletPolicyPDA,
       systemProgram: anchor.web3.SystemProgram.programId,
     })
     .rpc()
@@ -473,14 +475,14 @@ const payerAtaWrapped = getAssociatedTokenAddressSync(
 
 
   // ADD SIGNER2 TO USER POLICY with REQUIRE FALSE
-  it("Add signer2 to user policy require false", async () => {
+  it("Add signer2 to wallet policy require false", async () => {
 
     const tx = await program.methods.addSigner2ToWalletPolicy(
       signer2.publicKey,
       false
     )
     .accounts({
-      walletPolicy: wallet_policy_pda,
+      walletPolicy: walletPolicyPDA,
       systemProgram: anchor.web3.SystemProgram.programId,
     })
     .rpc()
@@ -492,11 +494,11 @@ const payerAtaWrapped = getAssociatedTokenAddressSync(
 
 
     // REMOVE SIGNER2 FROM USER POLICY
-    it("Remove signer2 from user policy", async () => {
+    it("Remove signer2 from wallet policy", async () => {
 
         const tx = await program.methods.removeSigner2FromWalletPolicy()
         .accounts({
-        walletPolicy: wallet_policy_pda,
+        walletPolicy: walletPolicyPDA,
         systemProgram: anchor.web3.SystemProgram.programId,
         })
         .rpc()
@@ -508,14 +510,14 @@ const payerAtaWrapped = getAssociatedTokenAddressSync(
 
 
   // ADD SIGNER2 TO USER POLICY with REQUIRE TRUE
-  it("Add signer2 to user policy require true", async () => {
+  it("Add signer2 to wallet policy require true", async () => {
 
     const tx = await program.methods.addSigner2ToWalletPolicy(
       signer1.publicKey,
       true
     )
     .accounts({
-      walletPolicy: wallet_policy_pda,
+      walletPolicy: walletPolicyPDA,
       systemProgram: anchor.web3.SystemProgram.programId,
     })
     .rpc()
@@ -533,7 +535,7 @@ const payerAtaWrapped = getAssociatedTokenAddressSync(
           allow_list,
         )
         .accounts({
-          walletPolicy: wallet_policy_pda,
+          walletPolicy: walletPolicyPDA,
           systemProgram: anchor.web3.SystemProgram.programId,
         })
         .rpc()
@@ -551,7 +553,7 @@ const payerAtaWrapped = getAssociatedTokenAddressSync(
           remove_from_allow_list,
         )
         .accounts({
-          walletPolicy: wallet_policy_pda,
+          walletPolicy: walletPolicyPDA,
           systemProgram: anchor.web3.SystemProgram.programId,
         })
         .rpc()
@@ -568,7 +570,7 @@ const payerAtaWrapped = getAssociatedTokenAddressSync(
           block_list,
         )
         .accounts({
-          walletPolicy: wallet_policy_pda,
+          walletPolicy: walletPolicyPDA,
           systemProgram: anchor.web3.SystemProgram.programId,
         })
         .rpc()
@@ -586,7 +588,7 @@ const payerAtaWrapped = getAssociatedTokenAddressSync(
           remove_from_block_list,
         )
         .accounts({
-          walletPolicy: wallet_policy_pda,
+          walletPolicy: walletPolicyPDA,
           systemProgram: anchor.web3.SystemProgram.programId,
         })
         .rpc()
@@ -598,13 +600,13 @@ const payerAtaWrapped = getAssociatedTokenAddressSync(
 
     
     // ADD SPENDING WINDOW
-    it("Add spending window to user policy", async () => {
+    it("Add spending window to wallet policy", async () => {
 
         const tx = await program.methods.addSpendingWindowToWalletPolicy(
           spending_window,
         )
         .accounts({
-          walletPolicy: wallet_policy_pda,
+          walletPolicy: walletPolicyPDA,
           systemProgram: anchor.web3.SystemProgram.programId,
         })
         .rpc()
@@ -616,11 +618,11 @@ const payerAtaWrapped = getAssociatedTokenAddressSync(
 
 
     // REMOVE SPENDING WINDOW
-    it("Remove spending window from user policy", async () => {
+    it("Remove spending window from wallet policy", async () => {
 
         const tx = await program.methods.removeSpendingWindowFromWalletPolicy()
         .accounts({
-          walletPolicy: wallet_policy_pda,
+          walletPolicy: walletPolicyPDA,
           systemProgram: anchor.web3.SystemProgram.programId,
         })
         .rpc()
@@ -631,19 +633,19 @@ const payerAtaWrapped = getAssociatedTokenAddressSync(
       });  
 
         // DELETE USER POLICY
-  it("Delete User Policy", async () => {
+      // it("Delete Wallet Policy", async () => {
 
-    const tx = await program.methods.deleteWalletPolicy()
-    .accounts({
-      walletPolicy: wallet_policy_pda,
-      systemProgram: anchor.web3.SystemProgram.programId,
-    })
-    .rpc()
-    .then(confirm)
-    // .then(log_wallet_policy)
-    .then(log_tx);
+      //   const tx = await program.methods.deleteWalletPolicy()
+      //   .accounts({
+      //     walletPolicy: walletPolicyPDA,
+      //     systemProgram: anchor.web3.SystemProgram.programId,
+      //   })
+      //   .rpc()
+      //   .then(confirm)
+      //   // .then(log_wallet_policy)
+      //   .then(log_tx);
 
-  });
+      // });
 
 
 
@@ -721,7 +723,23 @@ it("Wrap token", async () => {
 });
 
 
+
+
+
+
   it("Transfer Hook with Extra Account Meta", async () => {
+
+    let signer2TokenAccount = await getOrCreateAssociatedTokenAccount(
+      connection, 
+      wallet.payer, 
+      mintWrapped.publicKey, 
+      signer2.publicKey,
+      true,
+      undefined,
+      undefined,
+      TOKEN_2022_PROGRAM_ID,
+      ASSOCIATED_TOKEN_PROGRAM_ID
+    )
 
     let amount = BigInt(2);
 
@@ -729,7 +747,7 @@ it("Wrap token", async () => {
       connection,
       payerAtaWrapped,
       mintWrapped.publicKey,
-      payerAtaWrapped,
+      signer2TokenAccount.address,
       wallet.publicKey,
       amount,
       decimals,
@@ -749,5 +767,8 @@ it("Wrap token", async () => {
     console.log("This is the token transfer:", txSig);
 
   });
+
+  console.log(`Mint wrapped public key: ${mintWrapped}`);
+  console.log(`Mint original public key: ${mintOriginal}`);
   
 });

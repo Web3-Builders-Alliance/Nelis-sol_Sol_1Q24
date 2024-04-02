@@ -13,8 +13,70 @@ pub mod splcards {
     use super::*;
 
     /* 1. WalletPolicy account instructions */ 
-    
-    // Create a User Policy account in one go
+
+    /// Initializes a new complete wallet policy. 
+    /// 
+    /// A wallet policy is unique for a given owner.
+    /// 
+    /// Wallet policies contain settings of a user for any token where the user is the owner.
+    /// Possible settings include a spending window (e.g. only allow transactions during office hours) or specifying a 2nd signer.
+    /// 
+    /// This this instruction creates a complete wallet policy which can be modified using instructions like .remove_signer1().
+    /// 
+    /// 
+    /// # Arguments
+    ///
+    /// * `ctx` - The context for the initialization (automatically added).
+    /// * `signer1` - Extra signer for transactions that exceed the spending limit, next to the owner's signature. 
+    /// * `required_signer1` -  Indicator if signer1 is mandatory.
+    /// * `signer2` - Extra signer for transactions that exceed the spending limit, next to the owner's signature and signer1. 
+    /// * `required_signer2` - Indicator if signer2 is mandatory.
+    /// * `allow_list` - List of approved destination addresses. If set, transactions to addresses not in this list will be blocked.
+    /// * `block_list` - List of blocked destination addresses. Transactions to these addresses are blocked.
+    /// * `spending_window` - Begin and end time outside of which transactions are blocked. For example: transactions at night or outside of office hours.
+    /// 
+    /// # Example: Typescript client call
+    ///  ```typescript
+    /// const walletPolicyPDA = PublicKey.findProgramAddressSync(
+    ///         [ Buffer.from("wallet-policy"), signer.publicKey.toBuffer() ],
+    ///         program.programId,
+    /// )[0];
+    ///
+    /// await program.methods.newFullWalletPolicy(
+    ///         signer1.publicKey,
+    ///         true,
+    ///         signer2.publicKey,
+    ///         false,
+    ///         allow_list,
+    ///         block_list,
+    ///         spending_window
+    ///     )
+    ///     .accounts({
+    ///         mintWrapped: mintWrapped.publicKey,
+    ///         walletPolicy: walletPolicyPDA,
+    ///         systemProgram: SystemProgram.programId,
+    ///     })
+    ///     .rpc()
+    /// ```
+    /// 
+    /// # Output: PDA created
+    /// ```
+    /// struct WalletPolicyState {
+    ///     authority: signer.publicKey,                // 32 bytes
+    ///     signer1: signer1.publicKey,                 // 1 + 32 = 33 bytes
+    ///     required_signer1: true,                     // 1 byte
+    ///     signer2: signer2.publicKey,                 // 1 + 32 = 33 bytes
+    ///     required_signer2: false,                    // 1 byte
+    ///     allow_list: [allowAddress1.publicKey, allowedAddress2.publicKey],   // 4 + 32 * n = 68 bytes
+    ///     block_list: [],                             // 4 + 32 * n = 4 bytes
+    ///     spending_window: [1712050648, 1712068648],  // 1 + 8 + 8 = 17 bytes
+    ///     bump: bump,                                 // 1 byte
+    /// }
+    /// ```
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the initialization fails.
     pub fn new_full_wallet_policy(ctx: Context<WalletPolicyInstructions>, 
         signer1: Option<Pubkey>,
         required_signer1: bool,
@@ -89,16 +151,95 @@ pub mod splcards {
 
     /* 2. Token Policy account instructions */ 
 
-    // Create a Token Policy account in one go
-    pub fn new_full_token_policy(ctx: Context<TokenPolicyInstructions>, spend_limit_amount: Option<u64>) -> Result<()> {
-        ctx.accounts.new_full_token_policy(spend_limit_amount, &ctx.bumps)
-    }
-
-    /// Initializes a new token policy PDA.
+    /// Initializes a new complete token policy. 
+    /// 
+    /// A token policy is unique for a given owner and mint.
+    /// 
+    /// Token policies contain settings of a user for tokens of a specific mint. 
+    /// These policies are on top of the Wallet Policies set by a user, which are valid for every transaction.
+    /// Token Policies are only valid for a specific mint.
+    /// 
+    /// Possible settings include a daily spend limit.
+    /// 
+    /// This this instruction creates a complete token policy which can be modified using instructions like .remove_spend_limit_from_token_policy().
+    /// 
+    /// 
     ///
     /// # Arguments
     ///
     /// * `ctx` - The context for the initialization (automatically added).
+    /// * `spend_limit` - The number of tokens that can be spend within 24 hours.
+    /// 
+    /// # Example: Typescript client call
+    ///  ```typescript
+    /// await program.methods.newFullTokenPolicy(
+    ///     new anchor.BN(1000)
+    ///     )
+    ///     .accounts({
+    ///         mintWrapped: mintWrapped.publicKey,
+    ///         tokenPolicy: tokenPolicyPDA,
+    ///         systemProgram: SystemProgram.programId,
+    ///     })
+    ///     .rpc()
+    /// ```
+    /// 
+    /// # Output: PDA created
+    /// ```
+    /// struct TokenPolicyState {
+    ///     authority: signer.publicKey,    // 32 bytes
+    ///     mint: mintWrapped.publicKey,    // 32 bytes
+    ///     spent_last_24: [0, 0],          // 8 + 8 = 16 bytes
+    ///     spend_limit_amount: 1000,       // 1 + 8 = 9 bytes
+    ///     bump: bump,                     // 1 byte
+    /// }
+    /// ```
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the initialization fails.
+    pub fn new_full_token_policy(
+        ctx: Context<TokenPolicyInstructions>, 
+        spend_limit_amount: Option<u64>
+    ) -> Result<()> {
+        ctx.accounts.new_full_token_policy(spend_limit_amount, &ctx.bumps)
+    }
+
+    /// Initializes a new basic token policy. 
+    /// 
+    /// A token policy is unique for a given owner and mint.
+    /// 
+    /// Token policies contain settings of a user for tokens of a specific mint.
+    /// Possible settings include a daily spend limit.
+    /// 
+    /// This this instruction creates a basic token policy which can be build out using instructions like .add_spend_limit_to_token_policy().
+    /// 
+    /// 
+    ///
+    /// # Arguments
+    ///
+    /// * `ctx` - The context for the initialization (automatically added).
+    /// 
+    /// # Example: Typescript client call
+    ///  ```typescript
+    /// await program.methods.newTokenPolicy()
+    ///     .accounts({
+    ///         mintWrapped: mintWrapped.publicKey,
+    ///         tokenPolicy: tokenPolicyPDA,
+    ///         systemProgram: SystemProgram.programId,
+    ///     })
+    ///     .rpc()
+    /// ```
+    /// 
+    /// # Output: PDA created
+    /// ```
+    /// struct TokenPolicyState {
+    ///     authority: signer.publicKey,    // 32 bytes
+    ///     mint: mintWrapped.publicKey,    // 32 bytes
+    ///     spent_last_24: [0, 0],          // 8 + 8 = 16 bytes
+    ///     spend_limit_amount: None,       // 1 + 8 = 9 bytes
+    ///     bump: bump,                     // 1 byte
+    /// }
+    /// ```
     ///
     /// # Errors
     ///
@@ -144,8 +285,29 @@ pub mod splcards {
 
 
     pub fn transfer_hook(ctx: Context<TransferHook>, amount: u64) -> Result<()> {
-        msg!("BBBBBBBBBBBBBBBBBBB");
         ctx.accounts.transfer_hook(amount)
+    }
+
+
+    // fallback instruction handler as workaround to anchor instruction discriminator check
+    pub fn fallback<'info>(
+        program_id: &Pubkey,
+        accounts: &'info [AccountInfo<'info>],
+        data: &[u8],
+    ) -> Result<()> {
+        let instruction = TransferHookInstruction::unpack(data)?;
+
+        // match instruction discriminator to transfer hook interface execute instruction
+        // token2022 program CPIs this instruction on token transfer
+        match instruction {
+            TransferHookInstruction::Execute { amount } => {
+                let amount_bytes = amount.to_le_bytes();
+
+                // invoke custom transfer hook instruction on our program
+                __private::__global::transfer_hook(program_id, accounts, &amount_bytes)
+            }
+            _ => return Err(ProgramError::InvalidInstructionData.into()),
+        }
     }
 
 

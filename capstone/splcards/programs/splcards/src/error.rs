@@ -14,4 +14,6 @@ pub enum WalletPolicyErrorCodes {
     MissingRequiredSigners,
     #[msg("Not In Spend Window")]
     NotInSpendWindow,
+    #[msg("Transfer Hook fail - for testing")]
+    TransferHookIntentionalFail,
 }

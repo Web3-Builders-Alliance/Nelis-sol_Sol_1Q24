@@ -231,7 +231,7 @@ impl<'info> WrapperInstructions<'info> {
         ExtraAccountMeta::new_with_seeds(
             &[
                 Seed::Literal { bytes: SEED_WALLET_POLICY_ACCOUNT.to_vec() },
-                Seed::AccountKey { index: 3 }
+                Seed::AccountKey { index: 3 },
             ],
             false, // is_signer
             true,  // is_writable
@@ -239,7 +239,8 @@ impl<'info> WrapperInstructions<'info> {
         ExtraAccountMeta::new_with_seeds(
             &[
                 Seed::Literal { bytes: SEED_TOKEN_POLICY_ACCOUNT.to_vec() },
-                Seed::AccountKey { index: 3 }
+                Seed::AccountKey { index: 3 },
+                Seed::AccountKey { index: 1 }
             ],
             false, // is_signer
             true,  // is_writable

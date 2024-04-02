@@ -39,26 +39,24 @@ pub struct TransferHook<'info> {
         seeds = [SEED_WALLET_POLICY_ACCOUNT, owner.key().as_ref()],
         bump
     )]
-    /// CHECK: Sysvar instruction account
-    pub wallet_policy: UncheckedAccount<'info>,
+    /// CHECK: wallet policy can exist but doesn't need to
+    pub wallet_policy: UncheckedAccount<'info>, // Account<'info, WalletPolicyState>,
     #[account(
         mut,
-        seeds = [SEED_TOKEN_POLICY_ACCOUNT, owner.key().as_ref()],
+        seeds = [SEED_TOKEN_POLICY_ACCOUNT, owner.key().as_ref(), mint.key().as_ref()],
         bump
     )]
-    /// CHECK: Sysvar instruction account
-    pub token_policy: UncheckedAccount<'info>,
+    /// CHECK: token policy can exist but doesn't need to
+    pub token_policy: UncheckedAccount<'info>, // Account<'info, WalletPolicyState>,
 }
 
 impl<'info> TransferHook<'info> {
     pub fn transfer_hook(&mut self, amount: u64) -> Result<()> {
 
-        return Err(WalletPolicyErrorCodes::PubkeyNotInAllowList.into());
-
-        // msg!("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA transfer hook triggered!");
-
-        // let wallet_policy_info = self.wallet_policy.to_account_info();
+        let wallet_policy_info = self.wallet_policy.to_account_info();
         // let wallet_policy_data = wallet_policy_info.try_borrow_mut_data()?;
+        msg!("Wallet policy data: {:?}", wallet_policy_info);
+
 
         // // Try and Deserialize the Account, if it deserialize then we know that the sender has a wallet policy account and we should check it.
         // match  WalletPolicyState::try_deserialize(&mut &wallet_policy_data[..]) {
@@ -74,33 +72,32 @@ impl<'info> TransferHook<'info> {
         //         )?;
 
         //     },
-        //     Err(_) => {
-        //         msg!("No wallet policy available")
+        //     Err(error) => {
+        //         return Err(error).into()
         //     }
         // }
 
-        // let token_policy_info = self.token_policy.to_account_info();
-        // let token_policy_data = token_policy_info.try_borrow_mut_data()?;
+        let token_policy_info = self.token_policy.to_account_info();
+        let token_policy_data = token_policy_info.try_borrow_mut_data()?;
 
+        // Try and Deserialize the Account, if it deserialize then we know that the sender has a wallet policy account and we should check it.
+        match  TokenPolicyState::try_deserialize(&mut &token_policy_data[..]) {
+            Ok(token_policy) => {
 
-        // // Try and Deserialize the Account, if it deserialize then we know that the sender has a wallet policy account and we should check it.
-        // match  TokenPolicyState::try_deserialize(&mut &token_policy_data[..]) {
-        //     Ok(token_policy) => {
+                let current_time = Clock::get()?.unix_timestamp;
 
-        //         let current_time = Clock::get()?.unix_timestamp;
+                token_policy.check_compliance(
+                    amount,
+                    true, // signer 1 - hardcoded for now
+                    true, // signer 2 - hardcoded for now
+                    current_time
+                )?;
 
-        //         token_policy.check_compliance(
-        //             amount,
-        //             true, // signer 1 - hardcoded for now
-        //             true, // signer 2 - hardcoded for now
-        //             current_time
-        //         )?;
-
-        //     },
-        //     Err(_) => {
-        //         msg!("No token policy available")
-        //     }
-        // }
+            },
+            Err(_) => {
+                msg!("Token policy error")
+            }
+        }
 
 
         Ok(())

@@ -4,11 +4,11 @@ use crate::error::WalletPolicyErrorCodes;
 
 #[account]
 pub struct WalletPolicyState {
-    pub authority: Pubkey,  // 32 bytes
-    pub signer1: Option<Pubkey>,    // 32 bytes
-    pub required_signer1: bool, // 1 byte
-    pub signer2: Option<Pubkey>,    // 32 bytes
-    pub required_signer2: bool, // 1 byte
+    pub authority: Pubkey,          // 32 bytes
+    pub signer1: Option<Pubkey>,    // 1 + 32 bytes
+    pub required_signer1: bool,     // 1 byte
+    pub signer2: Option<Pubkey>,    // 1 + 32 bytes
+    pub required_signer2: bool,     // 1 byte
     pub allow_list: Vec<Pubkey>,    // 1 + 4 + 32 = 37 bytes
     pub block_list: Vec<Pubkey>,    // 1 + 4 + 32 = 37 bytes
     pub spending_window: Option<[i64; 2]>,    // 1 + 8 + 8 = 17 bytes
