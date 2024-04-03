@@ -65,67 +65,108 @@ impl WalletPolicyState {
             Ok(())
     }
 
-    pub fn add_signer1(&mut self, signer1: Pubkey, required_signer1: bool) -> &mut Self {
+    pub fn add_signer1(
+        &mut self, 
+        signer1: Pubkey, 
+        required_signer1: bool
+    ) -> Result<()> {
+
         self.signer1 = Some(signer1);
         self.required_signer1 = required_signer1;
-        self
+
+        Ok(())
     }
 
-    pub fn remove_signer1(&mut self) -> &mut Self {
+    pub fn remove_signer1(&mut self) -> Result<()> {
+
         self.signer1 = None;
         self.required_signer1 = false;
-        self
+        
+        Ok(())
     }
 
-    pub fn add_signer2(&mut self, signer2: Pubkey, required_signer2: bool) -> &mut Self {
+    pub fn add_signer2(
+        &mut self, 
+        signer2: Pubkey, 
+        required_signer2: bool
+    ) -> Result<()> {
+
         self.signer2 = Some(signer2);
         self.required_signer2 = required_signer2;
-        self
+        
+        Ok(())
     }
 
-    pub fn remove_signer2(&mut self) -> &mut Self {
+    pub fn remove_signer2(&mut self) -> Result<()> {
+
         self.signer2 = None;
         self.required_signer2 = false;
-        self
+        
+        Ok(())
     }
 
-    pub fn add_to_allow_list(&mut self, allowed_pubkey_list: Vec<Pubkey>) -> &mut Self {
+    pub fn add_to_allow_list(
+        &mut self, 
+        allowed_pubkey_list: Vec<Pubkey>
+    ) -> Result<()> {
+
         for item_to_be_added in allowed_pubkey_list {
             self.allow_list.push(item_to_be_added);
         }
-        self
+
+        Ok(())
     }
 
-    pub fn remove_from_allow_list(&mut self, remove_pubkey_list: Vec<Pubkey>) -> &mut Self {
+    pub fn remove_from_allow_list(
+        &mut self, 
+        remove_pubkey_list: Vec<Pubkey>
+    ) -> Result<()> {
+
         for item_to_be_removed in remove_pubkey_list {
             self.allow_list.retain(|&x| x != item_to_be_removed);
         }
-        self
+
+        Ok(())
     }
 
 
-    pub fn add_to_block_list(&mut self, blocked_pubkey_list: Vec<Pubkey>) -> &mut Self {
+    pub fn add_to_block_list(
+        &mut self, 
+        blocked_pubkey_list: Vec<Pubkey>
+    ) -> Result<()> {
+
         for item_to_be_added in blocked_pubkey_list {
             self.block_list.push(item_to_be_added);
         }
-        self
+        
+        Ok(())
     }
 
-    pub fn remove_from_block_list(&mut self, remove_pubkey_list: Vec<Pubkey>) -> &mut Self {
+    pub fn remove_from_block_list(
+        &mut self, 
+        remove_pubkey_list: Vec<Pubkey>
+    ) -> Result<()> {
+
         for item_to_be_removed in remove_pubkey_list {
             self.block_list.retain(|&x| x != item_to_be_removed);
         }
-        self
+        
+        Ok(())
     }
 
-    pub fn add_spending_window(&mut self, spending_window: [i64; 2] ) -> &mut Self {
+    pub fn add_spending_window(
+        &mut self, 
+        spending_window: [i64; 2] 
+    ) -> Result<()> {
+
         self.spending_window = Some(spending_window);
-        self
+        Ok(())
     }
 
-    pub fn remove_spending_window(&mut self) -> &mut Self {
+    pub fn remove_spending_window(&mut self) -> Result<()> {
+        
         self.spending_window = None;
-        self
+        Ok(())
     }
 
 

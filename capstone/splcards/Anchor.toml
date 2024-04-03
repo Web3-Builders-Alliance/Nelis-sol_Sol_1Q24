@@ -7,11 +7,17 @@ skip-lint = false
 [programs.localnet]
 splcards = "6jPXVk78mLJq3MAz24gasxmYmV2f3bYDd5Rp5zK92tew"
 
+[programs.devnet]
+splcards = "6jPXVk78mLJq3MAz24gasxmYmV2f3bYDd5Rp5zK92tew"
+
+[programs.mainnet]
+splcards = "6jPXVk78mLJq3MAz24gasxmYmV2f3bYDd5Rp5zK92tew"
+
 [registry]
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "Localnet"
+cluster = "mainnet"
 wallet = "/Users/nielsoskam/.config/solana/id.json"
 
 [scripts]

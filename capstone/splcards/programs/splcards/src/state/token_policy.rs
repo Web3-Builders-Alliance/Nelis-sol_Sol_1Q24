@@ -19,7 +19,8 @@ impl Space for TokenPolicyState {
 
 impl TokenPolicyState {
 
-    pub fn new(&mut self,
+    pub fn new(
+        &mut self,
         authority: Pubkey,
         mint: Pubkey,
         bump: u8,
@@ -33,7 +34,8 @@ impl TokenPolicyState {
             Ok(())
     }
 
-    pub fn new_full(&mut self,
+    pub fn new_full(
+        &mut self,
         authority: Pubkey,
         mint: Pubkey,
         spend_limit_amount: Option<u64>,
@@ -48,19 +50,28 @@ impl TokenPolicyState {
             Ok(())
     }
 
-    pub fn add_spend_limit(&mut self, spend_limit_amount: u64) -> &mut Self {
+    pub fn add_spend_limit(
+        &mut self, 
+        spend_limit_amount: u64
+    ) -> Result<()> {
+        
         self.spend_limit_amount = Some(spend_limit_amount);
-        self
+        Ok(())
     }
 
-    pub fn remove_spend_limit(&mut self) -> &mut Self {
+    pub fn remove_spend_limit(&mut self) -> Result<()> {
+
         self.spend_limit_amount = None;
-        self
+        Ok(())
     }
 
-    pub fn update_spent_last_24(&mut self, spent_last_24: [i64; 2]) -> &mut Self {
+    pub fn update_spent_last_24(
+        &mut self, 
+        spent_last_24: [i64; 2]
+    ) -> Result<()> {
+        
         self.spent_last_24 = spent_last_24;
-        self
+        Ok(())
     }
 
     

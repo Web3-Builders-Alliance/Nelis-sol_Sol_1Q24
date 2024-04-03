@@ -1,7 +1,6 @@
 use anchor_lang::prelude::*;
 use anchor_spl::{
-    associated_token::AssociatedToken, 
-    token::{Token}, 
+    associated_token::AssociatedToken,
     token_2022::{mint_to, MintTo, Token2022}, 
     token_interface::{Mint, TokenAccount, TransferChecked, transfer_checked, TokenInterface}
 };
@@ -55,8 +54,11 @@ pub struct Wrap<'info> {
 }
 
 impl<'info> Wrap<'info> {
-    pub fn wrap(&mut self, amount: u64, bumps: &WrapBumps) -> Result<()> {
-        msg!(&self.payer_ata_original.to_account_info().key().to_string());
+
+    // Wrap function allows us to take in mint_original tokens, and mint new mint_wrapped tokens to the user
+    pub fn wrap(&mut self, amount: u64, _bumps: &WrapBumps) -> Result<()> {
+
+        // transfer original tokens to the vault 
         let cpi_accounts = TransferChecked {
             from: self.payer_ata_original.to_account_info(),
             mint: self.mint_original.to_account_info(),
@@ -70,12 +72,15 @@ impl<'info> Wrap<'info> {
 
         transfer_checked(ctx, amount, self.mint_original.decimals)?;
 
+
+        // prepare signer seeds for wrapper (authority of mint_wrapped)
         let signer_seeds: [&[&[u8]];1] = [&[
             SEED_WRAPPER_ACCOUNT, 
             self.wrapper.mint_original.as_ref(),
             &[self.wrapper.bump],
         ]];
         
+        // mint tokens to user
         let cpi_accounts_mint = MintTo {
             mint: self.mint_wrapped.to_account_info(),
             to: self.payer_ata_wrapped.to_account_info(),
@@ -89,6 +94,7 @@ impl<'info> Wrap<'info> {
         );
 
         mint_to(ctx_mint, amount)?;
+
 
         Ok(())
     }

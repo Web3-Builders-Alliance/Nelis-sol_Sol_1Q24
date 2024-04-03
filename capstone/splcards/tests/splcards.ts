@@ -82,15 +82,12 @@ const payerAtaWrapped = getAssociatedTokenAddressSync(
 );
 
 
-
-
-
   const random_pubkey1 = Keypair.generate().publicKey;
   const random_pubkey2 = Keypair.generate().publicKey;
   const random_pubkey3 = Keypair.generate().publicKey;
 
-  const allow_list = [random_pubkey1, random_pubkey2, random_pubkey3];
-  const remove_from_allow_list = [random_pubkey2, random_pubkey3];
+  const allow_list = [random_pubkey1, random_pubkey2, signer2.publicKey];
+  const remove_from_allow_list = [random_pubkey1, random_pubkey2];
 
   const block_list = [random_pubkey2, random_pubkey3];
   const remove_from_block_list = [random_pubkey2];
@@ -260,8 +257,8 @@ const payerAtaWrapped = getAssociatedTokenAddressSync(
     .signers([wallet.payer, mintWrapped])
     .rpc({skipPreflight: true})
     .then(confirm)
-    .then(log_wrapper);
-    // .then(log_tx);
+    // .then(log_wrapper);
+    .then(log_tx);
 
   });
 
@@ -285,8 +282,8 @@ const payerAtaWrapped = getAssociatedTokenAddressSync(
       systemProgram: anchor.web3.SystemProgram.programId,
     })
     .rpc()
-    .then(confirm)
-    .then(log_token_policy);
+    .then(confirm);
+    // .then(log_token_policy);
     // .then(log_tx);
 
   });
@@ -297,7 +294,7 @@ const payerAtaWrapped = getAssociatedTokenAddressSync(
 
     const tx = await program.methods.deleteTokenPolicy()
     .accounts({
-      mint: mintWrapped.publicKey,
+      mintWrapped: mintWrapped.publicKey,
       tokenPolicy: tokenPolicyPDA,
       systemProgram: anchor.web3.SystemProgram.programId,
     })
@@ -389,7 +386,7 @@ const payerAtaWrapped = getAssociatedTokenAddressSync(
   
   
   // DELETE USER POLICY
-  it("Delete User Policy", async () => {
+  it("Delete Wallet Policy", async () => {
 
     const tx = await program.methods.deleteWalletPolicy()
     .accounts({
@@ -632,35 +629,6 @@ const payerAtaWrapped = getAssociatedTokenAddressSync(
     
       });  
 
-        // DELETE USER POLICY
-      // it("Delete Wallet Policy", async () => {
-
-      //   const tx = await program.methods.deleteWalletPolicy()
-      //   .accounts({
-      //     walletPolicy: walletPolicyPDA,
-      //     systemProgram: anchor.web3.SystemProgram.programId,
-      //   })
-      //   .rpc()
-      //   .then(confirm)
-      //   // .then(log_wallet_policy)
-      //   .then(log_tx);
-
-      // });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -678,9 +646,6 @@ const payerAtaWrapped = getAssociatedTokenAddressSync(
       mintWrapped: mintWrapped.publicKey,
       mintOriginal: mintOriginal.publicKey,
       wrapper: wrapper,
-      vault: vault,
-      extraAccountMetaList: extra_account_meta_list,
-      rent: SYSVAR_RENT_PUBKEY,
       systemProgram: anchor.web3.SystemProgram.programId,
       associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
       tokenProgram: TOKEN_2022_PROGRAM_ID,
@@ -768,7 +733,20 @@ it("Wrap token", async () => {
 
   });
 
-  console.log(`Mint wrapped public key: ${mintWrapped}`);
-  console.log(`Mint original public key: ${mintOriginal}`);
+
+    //       DELETE USER POLICY
+    it("Delete Wallet Policy", async () => {
+
+      const tx = await program.methods.deleteWalletPolicy()
+      .accounts({
+        walletPolicy: walletPolicyPDA,
+        systemProgram: anchor.web3.SystemProgram.programId,
+      })
+      .rpc()
+      .then(confirm)
+      // .then(log_wallet_policy)
+      .then(log_tx);
+
+    });
   
 });

@@ -2,10 +2,9 @@ use anchor_lang::prelude::*;
 use anchor_spl::{
     associated_token::AssociatedToken, 
     token::{transfer, Token, Transfer}, 
-    token_2022::{mint_to, MintTo, Token2022, burn, Burn}, 
+    token_2022::{Token2022, burn, Burn}, 
     token_interface::{Mint, TokenAccount}
 };
-pub use spl_transfer_hook_interface::instruction::{ExecuteInstruction, TransferHookInstruction};
 
 use crate::state::WrapperState;
 use crate::constants::*;
@@ -14,13 +13,14 @@ use crate::constants::*;
 pub struct Unwrap<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
-    #[account(mut,  
+    #[account(
+        mut,  
         associated_token::authority = payer,      
         associated_token::mint = mint_original
     )]
     pub payer_ata_original: InterfaceAccount<'info, TokenAccount>,
-    #[account(init_if_needed,  
-        payer = payer,
+    #[account(
+        mut,
         associated_token::authority = payer,      
         associated_token::mint = mint_wrapped
     )]
@@ -50,7 +50,7 @@ pub struct Unwrap<'info> {
 
 impl<'info> Unwrap<'info> {
 
-    pub fn unwrap(&mut self, amount: u64, bumps: &UnwrapBumps) -> Result<()> {
+    pub fn unwrap(&mut self, amount: u64, _bumps: &UnwrapBumps) -> Result<()> {
 
         burn(
             CpiContext::new(
