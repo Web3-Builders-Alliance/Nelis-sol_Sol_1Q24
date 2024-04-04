@@ -27,6 +27,8 @@ import {
   MINT_SIZE,
   createTransferCheckedWithTransferHookInstruction,
 } from "@solana/spl-token";
+import { Buffer } from 'buffer';
+
 
 describe("SPL Cards tests", () => {
   // Configure the client to use the local cluster.
@@ -250,9 +252,9 @@ const payerAtaWrapped = getAssociatedTokenAddressSync(
       vault: vault,
       extraAccountMetaList: extra_account_meta_list,
       rent: SYSVAR_RENT_PUBKEY,
-      systemProgram: anchor.web3.SystemProgram.programId,
       associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
       tokenProgram: TOKEN_2022_PROGRAM_ID,
+      systemProgram: anchor.web3.SystemProgram.programId,
     })
     .signers([wallet.payer, mintWrapped])
     .rpc({skipPreflight: true})
