@@ -10,6 +10,7 @@ import {
   Transaction,
   LAMPORTS_PER_SOL,
 } from "@solana/web3.js";
+import BN from 'bn.js';
 import { Program, AnchorProvider, Wallet } from "@project-serum/anchor";
 import { useWallet } from "@solana/wallet-adapter-react";
 import {
@@ -67,6 +68,13 @@ const App = () => {
     console.log(`uri: ${event.target.value}`);
   };
 
+  const [dailySpendingLimitValue, setDailySpendingLimitValue] = useState('');
+  const handleChangeDailySpendingLimit = (event) => {
+    let bigNumber = new BN(event.target.value);
+    setDailySpendingLimitValue(bigNumber);
+    console.log(`Daily spending limit: ${event.target.value}`);
+  };
+
 
   // const [mintWrappedValue, setMintWrappedValue] = useState('');
 
@@ -101,6 +109,16 @@ const App = () => {
     )[0];
     return vault
   }
+
+
+  function getTokenPolicyPDA(payerKey, mintWrapped) {
+    tokenPolicy = PublicKey.findProgramAddressSync(
+      [Buffer.from("token-policy"), payerKey.toBuffer(), mintWrapped.publicKey.toBuffer(),],
+      programId,
+    )[0];
+    return tokenPolicy
+  }
+
 
   function getExtraAccountMetaListPDA(mintWrapped, programId) {
     extra_account_meta_list = PublicKey.findProgramAddressSync(
@@ -200,46 +218,82 @@ const App = () => {
 
 
 
-    // CREATE WRAPPER
-    const updateWrapper = async () => {
+  // UPDATE WRAPPER
+  const updateWrapper = async () => {
 
-      let program = initialiseProgram();
-  
-      // try to prepare accounts
+    let program = initialiseProgram();
+
+    // try to prepare accounts
+    try {
+      let wrapperPDA = getWrapperPDA(mintOriginalValue, program.programId)
+
+      // try to send transaction
       try {
-        let wrapperPDA = getWrapperPDA(mintOriginalValue, program.programId)
-  
-        // try to send transaction
-        try {
-          let tx = await program.methods.updateWrapper(
-            "BONK"
-          )
-          .accounts({
-            payer: wallet.payer.publicKey,
-            mintWrapped: mintWrapped.publicKey,
-            mintOriginal: mintOriginalValue,
-            wrapper: wrapperPDA,
-            systemProgram: SystemProgram.programId,
-            associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-            tokenProgram: TOKEN_2022_PROGRAM_ID,
-          })
-          .signers([mintWrapped])
-          .rpc({
-            commitment: 'finalized', 
-            skipPreflight: true, 
-          });
-  
-          console.log(tx);
-    
-        } catch(e) {
-          console.log(e)
-        }
-      } catch (err) {
-        console.error("Error creating wrapper accounts:", err);
-        setError("Failed to create greeting account. Please try again.");
-      }
-    };
+        let tx = await program.methods.updateWrapper(
+          "BONK"
+        )
+        .accounts({
+          payer: wallet.payer.publicKey,
+          mintWrapped: mintWrapped.publicKey,
+          mintOriginal: mintOriginalValue,
+          wrapper: wrapperPDA,
+          systemProgram: SystemProgram.programId,
+          associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+          tokenProgram: TOKEN_2022_PROGRAM_ID,
+        })
+        .signers([mintWrapped])
+        .rpc({
+          commitment: 'finalized', 
+          skipPreflight: true, 
+        });
 
+        console.log(tx);
+  
+      } catch(e) {
+        console.log(e)
+      }
+    } catch (err) {
+      console.error("Error creating wrapper accounts:", err);
+      setError("Failed to create greeting account. Please try again.");
+    }
+  };
+
+
+
+// CREATE COMPLETE TOKEN POLICY
+const newFullTokenPolicy = async () => {
+
+  let program = initialiseProgram();
+
+  // try to prepare accounts
+  try {
+    let tokenPolicyPDA = getTokenPolicyPDA(wallet, mintWrapped)
+
+    // try to send transaction
+    try {
+      const tx = await program.methods.newFullTokenPolicy(
+        dailySpendingLimitValue
+      )
+      .accounts({
+        mintWrapped: mintWrapped.publicKey,
+        tokenPolicy: tokenPolicyPDA,
+        systemProgram: SystemProgram.programId,
+      })
+      .rpc({
+        commitment: 'finalized', 
+        skipPreflight: true, 
+      });
+
+      console.log(tx);
+
+    } catch(e) {
+      console.log(e)
+    }
+  } catch (err) {
+    console.error("Error creating wrapper accounts:", err);
+    setError("Failed to create greeting account. Please try again.");
+  }
+};
 
 
   
@@ -306,14 +360,14 @@ const App = () => {
       <label>Daily spending limit</label>
       <input
         type="number"
-        id="mintOriginalAddress"
-        value={mintOriginalValue}
-        onChange={handleChangeMintOriginal}
+        id="dailySpendingLimit"
+        value={dailySpendingLimitValue}
+        onChange={handleChangeDailySpendingLimit}
       />
       <br />
 
       <br /><br />
-      <button onClick={createWrapper}>Create Token Policy</button>
+      <button onClick={createTokenPolicy}>Create Token Policy</button>
 
 
 

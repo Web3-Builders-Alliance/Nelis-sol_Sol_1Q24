@@ -236,6 +236,7 @@ const payerAtaWrapped = getAssociatedTokenAddressSync(
 
 
   console.log(`mintWrapped public key: ${mintWrapped.publicKey.toString()}`)
+  
   // CREATE NEW WRAPPER
   it("Create a new wrapper", async () => {
 
@@ -344,21 +345,21 @@ const payerAtaWrapped = getAssociatedTokenAddressSync(
   });
 
 
-  // REMOVE SPEND LIMIT FROM TOKEN POLICY
-  it("Remove spend limit from Token Policy", async () => {
+  // // REMOVE SPEND LIMIT FROM TOKEN POLICY
+  // it("Remove spend limit from Token Policy", async () => {
 
-    const tx = await program.methods.removeSpendLimitFromTokenPolicy()
-    .accounts({
-      mintWrapped: mintWrapped.publicKey,
-      tokenPolicy: tokenPolicyPDA,
-      systemProgram: anchor.web3.SystemProgram.programId,
-    })
-    .rpc()
-    .then(confirm)
-    // .then(log_token_policy)
-    .then(log_tx);
+  //   const tx = await program.methods.removeSpendLimitFromTokenPolicy()
+  //   .accounts({
+  //     mintWrapped: mintWrapped.publicKey,
+  //     tokenPolicy: tokenPolicyPDA,
+  //     systemProgram: anchor.web3.SystemProgram.programId,
+  //   })
+  //   .rpc()
+  //   .then(confirm)
+  //   // .then(log_token_policy)
+  //   .then(log_tx);
 
-  });
+  // });
 
 
 
@@ -692,6 +693,23 @@ it("Wrap token", async () => {
 
 
 
+  // DELETE TOKEN POLICY
+  it("Delete Token Policy", async () => {
+
+    const tx = await program.methods.deleteTokenPolicy()
+    .accounts({
+      mintWrapped: mintWrapped.publicKey,
+      tokenPolicy: tokenPolicyPDA,
+      systemProgram: anchor.web3.SystemProgram.programId,
+    })
+    .rpc()
+    .then(confirm)
+    // .then(log_token_policy)
+    .then(log_tx);
+
+  });
+  
+
 
 
   it("Transfer Hook with Extra Account Meta", async () => {
@@ -708,7 +726,48 @@ it("Wrap token", async () => {
       ASSOCIATED_TOKEN_PROGRAM_ID
     )
 
-    let amount = BigInt(2);
+    let amount = BigInt(1);
+
+    let transferInstructionWithHelper = await createTransferCheckedWithTransferHookInstruction( 
+      connection,
+      payerAtaWrapped,
+      mintWrapped.publicKey,
+      signer2TokenAccount.address,
+      wallet.publicKey,
+      amount,
+      decimals,
+      [],
+      "confirmed",
+      TOKEN_2022_PROGRAM_ID,
+    );
+
+    let tx = new Transaction().add(transferInstructionWithHelper);
+
+    const txSig = await sendAndConfirmTransaction(
+      connection,
+      tx,
+      [wallet.payer],
+      { skipPreflight: true, commitment: "confirmed"}
+    );
+    console.log("This is the token transfer:", txSig);
+
+  });
+
+  it("Transfer Hook with Extra Account Meta", async () => {
+
+    let signer2TokenAccount = await getOrCreateAssociatedTokenAccount(
+      connection, 
+      wallet.payer, 
+      mintWrapped.publicKey, 
+      signer2.publicKey,
+      true,
+      undefined,
+      undefined,
+      TOKEN_2022_PROGRAM_ID,
+      ASSOCIATED_TOKEN_PROGRAM_ID
+    )
+
+    let amount = BigInt(1);
 
     let transferInstructionWithHelper = await createTransferCheckedWithTransferHookInstruction( 
       connection,

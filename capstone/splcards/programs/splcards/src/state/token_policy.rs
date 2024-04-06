@@ -75,8 +75,9 @@ impl TokenPolicyState {
     }
 
     
-    pub fn check_compliance(&self,
-        amount: u64,
+    pub fn check_compliance(
+        &mut self,
+        amount: i64,
         signer1: bool,
         signer2: bool,
         current_timestamp: i64,
@@ -86,22 +87,35 @@ impl TokenPolicyState {
             // get start of today timestamp
             let today_timestamp = current_timestamp - (current_timestamp % 86400);
 
+            msg!("timestamp today: {:?}", today_timestamp);
+            msg!("timestamp last spend day: {:?}", self.spent_last_24);
+
+            msg!("spend_limit: {:?}", spend_limit_amount);
+            msg!("current spend: {:?}", amount);
+            msg!("spend last 24h: {:?}", self.spent_last_24);
+
             // check if the amount spent in the last 24 hours is greater than the spend limit
             if self.spent_last_24[0] == today_timestamp {
+                msg!("BB");
                 if self.spent_last_24[1] + amount as i64 > spend_limit_amount as i64 {
                     if !signer1 && !signer2 {
                         return Err(WalletPolicyErrorCodes::SpendLimitExceeded.into());
                     }
                 }
-                // Problem: self is not mutable due to transfer hooks - self.spent_last_24[1] += amount as i64;
+                
+                self.spent_last_24[1] += amount;
+        
             } else {
-                if amount > spend_limit_amount {
+
+                if amount > spend_limit_amount as i64 {
+                    msg!("CC");
                     if !signer1 && !signer2 {
                         return Err(WalletPolicyErrorCodes::SpendLimitExceeded.into());
                     }
                 }
-                // Problem: self is not mutable due to transfer hooks - self.spent_last_24[0] = today_timestamp;
-                // Problem: self is not mutable due to transfer hooks - self.spent_last_24[1] = amount as i64;
+                self.spent_last_24[0] = today_timestamp;
+                self.spent_last_24[1] = amount as i64;
+
             }
         }
 

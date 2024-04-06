@@ -45,6 +45,10 @@ pub struct TransferHook<'info> {
     )]
     /// CHECK: token policy can exist but doesn't need to
     pub token_policy: UncheckedAccount<'info>,
+    // /// CHECK: this is not dangerous because we check if the account is a signer
+    // pub signer1: UncheckedAccount<'info>,
+    // /// CHECK: this is not dangerous because we check if the account is a signer
+    // pub signer2: UncheckedAccount<'info>,
 }
 
 impl<'info> TransferHook<'info> {
@@ -58,18 +62,19 @@ impl<'info> TransferHook<'info> {
         match  WalletPolicyState::try_deserialize(&mut &wallet_policy_data[..]) {
             Ok(wallet_policy) => {
 
+                msg!("Wallet policy found!");
+
                 let current_time = Clock::get()?.unix_timestamp;
 
                 // check if transaction is compliant with wallet policies set by user
-                let wallet_compliance_result = wallet_policy.check_compliance(
-                    true, // signer 1 - hardcoded for now
-                    true, // signer 2 - hardcoded for now
+                wallet_policy.check_compliance(
+                    true, // override when signer1 is a signer
+                    true, // override when signer2 is a signer
                     self.destination_token.owner, 
                     current_time
-                );
+                )?
 
                 // return ok or error
-                return wallet_compliance_result
             },
 
             Err(_) => {
@@ -81,28 +86,27 @@ impl<'info> TransferHook<'info> {
         let token_policy_info = self.token_policy.to_account_info();
         let token_policy_data = token_policy_info.try_borrow_mut_data()?;
 
+
         // Try and Deserialize the Account, if it deserialize then we know that the sender has a token policy account and we should check it.
         match  TokenPolicyState::try_deserialize(&mut &token_policy_data[..]) {
-            Ok(token_policy) => {
+            Ok(mut token_policy) => {
 
                 let current_time = Clock::get()?.unix_timestamp;
 
                 // check if transaction is compliant with token policies set by user
-                let token_compliance_result = token_policy.check_compliance(
-                    amount,
-                    true, // signer 1 - hardcoded for now
-                    true, // signer 2 - hardcoded for now
+                token_policy.check_compliance(
+                    amount as i64,
+                    false, // override when signer2 is a signer
+                    false, // override when signer2 is a signer
                     current_time
-                );
-
-                // return ok or error
-                return token_compliance_result
+                )?
 
             },
             Err(_) => {
                 // Do nothing: the user has no token_policy account
             }
         }
+
 
         Ok(())
 

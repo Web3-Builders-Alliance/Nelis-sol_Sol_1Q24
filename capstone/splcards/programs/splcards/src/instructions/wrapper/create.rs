@@ -254,7 +254,7 @@ impl<'info> CreateWrapper<'info> {
                 ],
                 // wallet_policy is not a signer in the transaction
                 false,
-                // wallet_policy is in case we want to make changes to the PDA
+                // wallet_policy is mutable in case we want to make changes to the PDA
                 true,
             )?,
             // seeds for token_policy
@@ -268,9 +268,10 @@ impl<'info> CreateWrapper<'info> {
                 ],
                 // token_policy is not a signer in the transaction
                 false,
-                // token_policy is mutable because we update the spending per 24 hours
+                // token_policy is mutable mutable because we update the spending per 24 hours
                 true,
             )?,
+            ExtraAccountMeta::new_with_pubkey(&self.system_program.key(), false, false)?,
         ];
     
         // calculate account size
