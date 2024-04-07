@@ -39,7 +39,7 @@ pub struct Wrap<'info> {
     )]
     pub wrapper: Account<'info, WrapperState>,
     #[account(
-        init_if_needed,  
+        init_if_needed,
         payer = payer,
         seeds = [SEED_VAULT_ACCOUNT, mint_original.key().as_ref()],
         bump,

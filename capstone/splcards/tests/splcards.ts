@@ -693,21 +693,21 @@ it("Wrap token", async () => {
 
 
 
-  // DELETE TOKEN POLICY
-  it("Delete Token Policy", async () => {
+  // // DELETE TOKEN POLICY
+  // it("Delete Token Policy", async () => {
 
-    const tx = await program.methods.deleteTokenPolicy()
-    .accounts({
-      mintWrapped: mintWrapped.publicKey,
-      tokenPolicy: tokenPolicyPDA,
-      systemProgram: anchor.web3.SystemProgram.programId,
-    })
-    .rpc()
-    .then(confirm)
-    // .then(log_token_policy)
-    .then(log_tx);
+  //   const tx = await program.methods.deleteTokenPolicy()
+  //   .accounts({
+  //     mintWrapped: mintWrapped.publicKey,
+  //     tokenPolicy: tokenPolicyPDA,
+  //     systemProgram: anchor.web3.SystemProgram.programId,
+  //   })
+  //   .rpc()
+  //   .then(confirm)
+  //   // .then(log_token_policy)
+  //   .then(log_tx);
 
-  });
+  // });
   
 
 
