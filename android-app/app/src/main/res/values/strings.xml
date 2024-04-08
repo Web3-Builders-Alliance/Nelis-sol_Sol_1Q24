@@ -1,0 +1,100 @@
+<resources>
+    <string name="app_name">SPL Cards</string>
+
+    <string name="navigation_item_wallet">Wallet</string>
+    <string name="navigation_item_nft">NFT</string>
+    <string name="navigation_item_logout">Logout</string>
+
+    <string name="label_device_has_no_nfc">Device has no NFC.</string>
+    <string name="label_footer_title">This app requires a SPL Card.</string>
+    <string name="label_footer_subtitle">Purchase your SPL Card today.</string>
+    <string name="label_email">Email</string>
+    <string name="label_password">Password</string>
+    <string name="label_pincode">Pincode</string>
+    <string name="label_email_placeholder">e.g. john@doe.com</string>
+    <string name="label_pincode_placeholder">e.g 837123</string>
+    <string name="label_verification_code">Verification code</string>
+    <string name="label_verification_code_placeholder">e.g. 738162</string>
+    <string name="label_recovery_phrase">1. Write down recovery phrase</string>
+    <string name="label_search_placeholder">Search</string>
+    <string name="label_current_balance">Current Balance</string>
+    <string name="label_choose_token">Choose Token</string>
+    <string name="label_amount">Amount</string>
+    <string name="label_amount_placeholder">e.g. 10</string>
+    <string name="label_your_wallet_address">Your Wallet Address</string>
+    <string name="label_wallet_address">Wallet Address</string>
+    <string name="label_wallet_address_placeholder">Address1,Address2,Address3…</string>
+    <string name="label_or">or</string>
+    <string name="label_copied_to_clipboard">Copied to the clipboard!</string>
+    <string name="label_error_has_occurred">An error has occurred. Try again later.</string>
+    <string name="label_recovery_phrase_warning">Never share your recovery phrase with anyone!</string>
+    <string name="label_policy_settings">Policy Settings</string>
+    <string name="label_white_list">PublicKey Whitelist</string>
+
+    <string name="button_confirm_email">Confirm email</string>
+    <string name="button_verify">Verify</string>
+    <string name="button_scan">Scan</string>
+    <string name="button_send">Send</string>
+    <string name="button_receive">Receive</string>
+    <string name="button_wrap">Wrap</string>
+    <string name="button_share">Share</string>
+    <string name="button_next">Next</string>
+    <string name="button_unlock">Unlock</string>
+    <string name="button_max">MAX</string>
+    <string name="button_view">View</string>
+    <string name="button_security">Security</string>
+    <string name="button_confirm_transaction">Confirm transaction</string>
+    <string name="button_confirm_wrapping">Confirm Wrapping</string>
+    <string name="button_update_policy">Update Policy</string>
+    <string name="button_reload_own_nfts">Reload own nfts</string>
+    <string name="button_update_wallet_policy">Update wallet policy</string>
+    <string name="button_wallet_security_options">Security Options</string>
+    <string name="button_wallet_security">Wallet Security</string>
+    <string name="button_token_security">Token Security</string>
+
+    <!-- Screen -->
+    <string name="get_started_title">Let\'s get started.</string>
+    <string name="get_started_scan_wallet_box_title">Scan wallet</string>
+    <string name="get_started_scan_wallet_box_subtitle">For existing users</string>
+    <string name="get_started_set_up_wallet_box_title">Set up a new wallet</string>
+    <string name="get_started_set_up_wallet_box_subtitle">For new users</string>
+    <string name="get_started_wrong_pincode_error">Wrong pincode.</string>
+    <string name="get_started_error">An error has occurred. Please try again later.</string>
+
+    <string name="new_wallet_title">Set up a new wallet.</string>
+    <string name="new_wallet_auth_mail_send_message">A verification code has been send to your email.</string>
+    <string name="new_wallet_auth_invalid_email">The entered email is not valid.</string>
+    <string name="new_wallet_auth_mail_send_error">An error has occurred. Please try again later.</string>
+    <string name="new_wallet_auth_wrong_verification_code">The entered verification code is incorrect.</string>
+
+    <string name="create_new_wallet_title">Set up a new wallet.</string>
+    <string name="create_new_wallet_enter_optionally_code_step">2. (Optional) Secure your wallet</string>
+    <string name="create_new_wallet_write_key_step">3. Write your key to the SPL Card</string>
+    <string name="create_new_wallet_nfc_tag_not_registered_error">The scanned NFC tag is not registered for the app.</string>
+    <string name="create_new_wallet_error">An error has occurred. Please try again later.</string>
+
+    <string name="nft_marketplaces_title">NFT Marketplaces</string>
+    <string name="nft_marketplaces_message">You do not own any nfts. However, you can buy some from one of the following nft marketplaces.</string>
+
+    <!-- Modals -->
+    <string name="modal_nfc_active_title">NFC active</string>
+    <string name="modal_nfc_pincode_title">Unlock your wallet</string>
+    <string name="modal_nfc_active_subtitle">Please scan your SPL Card</string>
+    <string name="modal_nfc_write_success_subtitle">Success! Your SPL Card is ready to go!</string>
+    <string name="modal_send_token_title">Send</string>
+    <string name="modal_send_token_same_addresses_error">Destination address should not be the same as the sender address.</string>
+    <string name="modal_send_token_wrong_pincode_error">Wrong pincode.</string>
+    <string name="modal_send_token_transaction_successfully">Transaction sent successfully!</string>
+
+    <string name="modal_receive_token_subtitle">Receive</string>
+    <string name="modal_receive_token_message">Share the above public address with the person sending you funds.</string>
+
+    <string name="modal_wrap_token_title">Wrap Token</string>
+    <string name="modal_wrap_token_message">Select a token to convert into an splcard token, enabling features like spending limits and more.</string>
+
+    <string name="modal_wallet_policy_title">Wallet Policy</string>
+    <string name="modal_wallet_policy_message">Secure your wallet with policy settings: whitelist approved public keys and set a spending window using UTC timestamps.</string>
+    <string name="modal_wallet_policy_whitelist_separated">Add multiple public keys by comma-separating them.</string>
+
+    <string name="modal_token_policy_title">Token Policy</string>
+</resources>

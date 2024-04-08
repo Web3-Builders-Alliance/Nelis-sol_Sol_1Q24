@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="padding_default">20dp</dimen>
+    <dimen name="padding_default_half">8dp</dimen>
+    <dimen name="app_logo_size">112dp</dimen>
+    <dimen name="button_min_height">48dp</dimen>
+</resources>
