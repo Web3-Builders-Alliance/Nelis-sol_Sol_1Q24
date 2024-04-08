@@ -3,6 +3,8 @@
 Program is deployed on devnet:
 <code>6jPXVk78mLJq3MAz24gasxmYmV2f3bYDd5Rp5zK92tew</code>
 
+<hr />
+
 Build project
 <code>anchor build</code>
 
