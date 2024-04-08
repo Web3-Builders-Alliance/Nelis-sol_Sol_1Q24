@@ -9,7 +9,7 @@ pub use anchor_lang::{
 
 use anchor_spl::{
     associated_token::AssociatedToken,
-    token_interface::{Mint, TokenAccount, TokenInterface},
+    token_interface::{Mint, TokenAccount, TokenInterface, Token2022},
 };
 
 pub use spl_token_2022::{
@@ -78,6 +78,7 @@ pub struct CreateWrapper<'info> {
     pub rent: UncheckedAccount<'info>,
     pub associated_token_program: Program<'info, AssociatedToken>,
     pub token_program: Interface<'info, TokenInterface>,
+    pub token_extensions_program: Program<'info, Token2022>,
     pub system_program: Program<'info, System>,
 }
 
@@ -137,6 +138,9 @@ impl<'info> CreateWrapper<'info> {
         // retrieve the amount of rent needed to cover the mint account (incl. metadata and token extensions)
         let lamports = rent.minimum_balance(size + extension_extra_space);
 
+
+        msg!("44");
+
         // create a new account for mint_wrapped, which we will initialize as mint later on
         invoke(
             &solana_program::system_instruction::create_account(
@@ -153,13 +157,14 @@ impl<'info> CreateWrapper<'info> {
         )?;
 
 
+        msg!("55");
 
         /*    Step 2: Initialize Extension needed    */
 
         // Initialize transfer hook
         invoke(
             &intialize_transfer_hook(
-                &self.token_program.key(),
+                &self.token_extensions_program.key(),
                 &self.mint_wrapped.key(),
                 // The wrapper PDA is the authority for the transfer hook
                 Some(self.wrapper.key()),
@@ -171,10 +176,12 @@ impl<'info> CreateWrapper<'info> {
             ],
         )?;
 
+        msg!("66");
+
         // Initialize metadata pointer
         invoke(
             &initialize_metadata_pointer(
-                &self.token_program.key(),
+                &self.token_extensions_program.key(),
                 &self.mint_wrapped.key(),
                 // The wrapper PDA is the authority for the metadata pointer
                 Some(self.wrapper.key()),
@@ -200,10 +207,11 @@ impl<'info> CreateWrapper<'info> {
         ];
         let signer_seeds = [&seeds[..]];
         
+        msg!("AA");
         // initialize mint_wrapped and sign with the wrapper PDA
         invoke_signed(
             &initialize_mint2(
-                &self.token_program.key(),
+                &self.token_extensions_program.key(),
                 &self.mint_wrapped.key(),
                 // the wrapper PDA is the mint authority
                 &self.wrapper.key(),
@@ -219,11 +227,13 @@ impl<'info> CreateWrapper<'info> {
             &signer_seeds
         )?;
 
+        msg!("BB");
+
 
         // initialize mint_wrapped and sign with the wrapper PDA
         invoke_signed(
             &initialize_metadata_account(
-                &self.token_program.key(),
+                &self.token_extensions_program.key(),
                 // metadata is stored at the mint_wrapped address
                 &self.mint_wrapped.key(),
                 // the wrapper PDA is the update authority for the metadata account
@@ -241,6 +251,7 @@ impl<'info> CreateWrapper<'info> {
             &signer_seeds
         )?;
 
+        msg!("CC");
 
         /*    Step 4: Initialize ExtraAccountMetaList account    */
 

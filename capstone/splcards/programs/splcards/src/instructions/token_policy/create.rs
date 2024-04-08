@@ -39,7 +39,8 @@ impl<'info> CreateTokenPolicy<'info> {
     }
 
     // Create new token policy PDA with specified settings
-    pub fn new_full_token_policy(&mut self, 
+    pub fn new_full_token_policy(
+        &mut self, 
         spend_limit_amount: Option<u64>, 
         bumps: &CreateTokenPolicyBumps
     ) -> Result<()> {

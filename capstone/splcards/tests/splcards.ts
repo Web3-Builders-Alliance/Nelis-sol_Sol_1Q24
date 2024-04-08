@@ -192,7 +192,7 @@ const payerAtaWrapped = getAssociatedTokenAddressSync(
         mintOriginal.publicKey,
         payerAtaOriginal,
         wallet.publicKey,
-        1000000000000,
+        1000000000001,
         [],
         TOKEN_2022_PROGRAM_ID,
       ),
@@ -240,6 +240,8 @@ const payerAtaWrapped = getAssociatedTokenAddressSync(
 //   // CREATE NEW WRAPPER
 //   it("Create a new wrapper", async () => {
 
+
+
 //     const tx = await program.methods.newWrapper(
 //       "USDC",
 //       "USDC",
@@ -255,6 +257,7 @@ const payerAtaWrapped = getAssociatedTokenAddressSync(
 //       rent: SYSVAR_RENT_PUBKEY,
 //       associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
 //       tokenProgram: TOKEN_2022_PROGRAM_ID,
+//       tokenExtensionsProgram: TOKEN_2022_PROGRAM_ID,
 //       systemProgram: anchor.web3.SystemProgram.programId,
 //     })
 //     .signers([wallet.payer, mintWrapped])
@@ -712,7 +715,7 @@ const payerAtaWrapped = getAssociatedTokenAddressSync(
 
 
 
-//   it("Transfer Hook with Extra Account Meta", async () => {
+//   it("Transfer", async () => {
 
 //     let signer2TokenAccount = await getOrCreateAssociatedTokenAccount(
 //       connection, 
@@ -753,7 +756,7 @@ const payerAtaWrapped = getAssociatedTokenAddressSync(
 
 //   });
 
-//   it("Transfer Hook with Extra Account Meta", async () => {
+//   it("TX should fail because transfers are over the daily spending limit", async () => {
 
 //     let signer2TokenAccount = await getOrCreateAssociatedTokenAccount(
 //       connection, 

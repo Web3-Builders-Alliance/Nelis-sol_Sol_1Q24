@@ -17,7 +17,7 @@ splcards = "6jPXVk78mLJq3MAz24gasxmYmV2f3bYDd5Rp5zK92tew"
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "mainnet"
+cluster = "devnet"
 wallet = "/Users/nielsoskam/.config/solana/id.json"
 
 [scripts]
