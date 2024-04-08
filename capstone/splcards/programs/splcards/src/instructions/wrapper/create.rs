@@ -9,7 +9,7 @@ pub use anchor_lang::{
 
 use anchor_spl::{
     associated_token::AssociatedToken,
-    token_interface::{Mint, TokenAccount, Token2022, TokenInterface},
+    token_interface::{Mint, TokenAccount, TokenInterface},
 };
 
 pub use spl_token_2022::{

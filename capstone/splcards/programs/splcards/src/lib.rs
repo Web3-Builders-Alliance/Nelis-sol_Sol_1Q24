@@ -123,6 +123,10 @@ pub mod splcards {
         ctx.accounts.update_wrapper(symbol)
     }
 
+    pub fn wrapper_close(ctx: Context<WrapperClose>) -> Result<()> {
+        ctx.accounts.wrapper_close()
+    }
+
 
     /* 4. Wrapping instructions */ 
 

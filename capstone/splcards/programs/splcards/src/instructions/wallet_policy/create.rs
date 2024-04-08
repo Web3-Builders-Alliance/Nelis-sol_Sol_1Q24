@@ -7,7 +7,7 @@ pub struct CreateWalletPolicy<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
     #[account(
-        init, 
+        init,
         payer = payer,
         space = WalletPolicyState::INIT_SPACE,
         // payer can only create a wallet_policy that is associated with payer's publickey

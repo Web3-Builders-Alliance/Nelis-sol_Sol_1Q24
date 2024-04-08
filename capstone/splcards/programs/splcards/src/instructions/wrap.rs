@@ -23,15 +23,16 @@ pub struct Wrap<'info> {
     #[account(
         init_if_needed,  
         payer = payer,
-        associated_token::authority = payer,      
+        associated_token::authority = payer,
         associated_token::mint = mint_wrapped,
         associated_token::token_program = token_extensions_program
     )]
     pub payer_ata_wrapped: InterfaceAccount<'info, TokenAccount>,
     // Mint of the wrapped tokens
+    #[account(address = wrapper.mint_original)]
     pub mint_original: InterfaceAccount<'info, Mint>,
     // Mint of the wrapped tokens
-    #[account(mut)]
+    #[account(mut, address = wrapper.mint_wrapped)]
     pub mint_wrapped: InterfaceAccount<'info, Mint>,
     #[account(
         seeds = [SEED_WRAPPER_ACCOUNT, wrapper.mint_original.key().as_ref()],

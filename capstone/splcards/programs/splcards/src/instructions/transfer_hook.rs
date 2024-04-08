@@ -45,12 +45,6 @@ pub struct TransferHook<'info> {
         bump
     )]
     pub token_policy: Account<'info, TokenPolicyState>,
-    // /// CHECK: token policy can exist but doesn't need to
-    // pub token_policy: UncheckedAccount<'info>,
-    // /// CHECK: this is not dangerous because we check if the account is a signer
-    // pub signer1: UncheckedAccount<'info>,
-    // /// CHECK: this is not dangerous because we check if the account is a signer
-    // pub signer2: UncheckedAccount<'info>,
 }
 
 impl<'info> TransferHook<'info> {
