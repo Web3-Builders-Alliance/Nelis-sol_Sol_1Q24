@@ -208,609 +208,609 @@ const payerAtaWrapped = getAssociatedTokenAddressSync(
 
 
 
-//   const wrapper = PublicKey.findProgramAddressSync(
-//     [
-//       Buffer.from("wrapper"),
-//       mintOriginal.publicKey.toBuffer(),
-//     ],
-//     program.programId,
-//   )[0];
+  const wrapper = PublicKey.findProgramAddressSync(
+    [
+      Buffer.from("wrapper"),
+      mintOriginal.publicKey.toBuffer(),
+    ],
+    program.programId,
+  )[0];
 
 
-//   const vault = PublicKey.findProgramAddressSync(
-//     [
-//       Buffer.from("vault"),
-//       mintOriginal.publicKey.toBuffer(),
-//     ],
-//     program.programId,
-//   )[0];
+  const vault = PublicKey.findProgramAddressSync(
+    [
+      Buffer.from("vault"),
+      mintOriginal.publicKey.toBuffer(),
+    ],
+    program.programId,
+  )[0];
 
 
-//   const extra_account_meta_list = PublicKey.findProgramAddressSync(
-//     [
-//       Buffer.from("extra-account-metas"),
-//       mintWrapped.publicKey.toBuffer(),
-//     ],
-//     program.programId,
-//   )[0];
+  const extra_account_meta_list = PublicKey.findProgramAddressSync(
+    [
+      Buffer.from("extra-account-metas"),
+      mintWrapped.publicKey.toBuffer(),
+    ],
+    program.programId,
+  )[0];
 
 
-//   console.log(`mintWrapped public key: ${mintWrapped.publicKey.toString()}`)
+  console.log(`mintWrapped public key: ${mintWrapped.publicKey.toString()}`)
   
-//   // CREATE NEW WRAPPER
-//   it("Create a new wrapper", async () => {
+  // CREATE NEW WRAPPER
+  it("Create a new wrapper", async () => {
+
+
+
+    const tx = await program.methods.newWrapper(
+      "USDC",
+      "USDC",
+      "https://www.example.com/wrapper.json"
+    )
+    .accounts({
+      payer: wallet.payer.publicKey,
+      mintWrapped: mintWrapped.publicKey,
+      mintOriginal: mintOriginal.publicKey,
+      wrapper: wrapper,
+      vault: vault,
+      extraAccountMetaList: extra_account_meta_list,
+      rent: SYSVAR_RENT_PUBKEY,
+      associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+      tokenProgram: TOKEN_2022_PROGRAM_ID,
+      tokenExtensionsProgram: TOKEN_2022_PROGRAM_ID,
+      systemProgram: anchor.web3.SystemProgram.programId,
+    })
+    .signers([wallet.payer, mintWrapped])
+    .rpc({skipPreflight: true})
+    .then(confirm)
+    // .then(log_wrapper);
+    .then(log_tx);
+
+  });
 
 
 
-//     const tx = await program.methods.newWrapper(
-//       "USDC",
-//       "USDC",
-//       "https://www.example.com/wrapper.json"
-//     )
-//     .accounts({
-//       payer: wallet.payer.publicKey,
-//       mintWrapped: mintWrapped.publicKey,
-//       mintOriginal: mintOriginal.publicKey,
-//       wrapper: wrapper,
-//       vault: vault,
-//       extraAccountMetaList: extra_account_meta_list,
-//       rent: SYSVAR_RENT_PUBKEY,
-//       associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-//       tokenProgram: TOKEN_2022_PROGRAM_ID,
-//       tokenExtensionsProgram: TOKEN_2022_PROGRAM_ID,
-//       systemProgram: anchor.web3.SystemProgram.programId,
-//     })
-//     .signers([wallet.payer, mintWrapped])
-//     .rpc({skipPreflight: true})
-//     .then(confirm)
-//     // .then(log_wrapper);
-//     .then(log_tx);
 
-//   });
-
-
-
-
-  
-
-
-
-
-//   // CREATE NEW FULLY DEFINED TOKEN POLICY
-//   it("Create new fully defined Token Policy", async () => {
-
-//     const tx = await program.methods.newFullTokenPolicy(
-//       new anchor.BN(1000)
-//     )
-//     .accounts({
-//       mintWrapped: mintWrapped.publicKey,
-//       tokenPolicy: tokenPolicyPDA,
-//       systemProgram: anchor.web3.SystemProgram.programId,
-//     })
-//     .rpc()
-//     .then(confirm);
-//     // .then(log_token_policy);
-//     // .then(log_tx);
-
-//   });
-
-
-//   // DELETE TOKEN POLICY
-//   it("Delete Token Policy", async () => {
-
-//     const tx = await program.methods.deleteTokenPolicy()
-//     .accounts({
-//       mintWrapped: mintWrapped.publicKey,
-//       tokenPolicy: tokenPolicyPDA,
-//       systemProgram: anchor.web3.SystemProgram.programId,
-//     })
-//     .rpc()
-//     .then(confirm)
-//     // .then(log_token_policy)
-//     .then(log_tx);
-
-//   });
-
-
-//   // CREATE NEW BASIC TOKEN POLICY
-//   it("Create new basic Token Policy", async () => {
-
-//     const tx = await program.methods.newTokenPolicy()
-//     .accounts({
-//       mintWrapped: mintWrapped.publicKey,
-//       tokenPolicy: tokenPolicyPDA,
-//       systemProgram: anchor.web3.SystemProgram.programId,
-//     })
-//     .rpc()
-//     .then(confirm)
-//     // .then(log_token_policy)
-//     .then(log_tx);
-
-//   });
-
-
-//   // ADD SPEND LIMIT TO TOKEN POLICY
-//   it("Add spend limit to Token Policy", async () => {
-
-//     const tx = await program.methods.addSpendLimitToTokenPolicy(
-//       new anchor.BN(1)
-//     )
-//     .accounts({
-//       mintWrapped: mintWrapped.publicKey,
-//       tokenPolicy: tokenPolicyPDA,
-//       systemProgram: anchor.web3.SystemProgram.programId,
-//     })
-//     .rpc()
-//     .then(confirm)
-//     // .then(log_token_policy)
-//     .then(log_tx);
-
-//   });
-
-
-//   // // REMOVE SPEND LIMIT FROM TOKEN POLICY
-//   // it("Remove spend limit from Token Policy", async () => {
-
-//   //   const tx = await program.methods.removeSpendLimitFromTokenPolicy()
-//   //   .accounts({
-//   //     mintWrapped: mintWrapped.publicKey,
-//   //     tokenPolicy: tokenPolicyPDA,
-//   //     systemProgram: anchor.web3.SystemProgram.programId,
-//   //   })
-//   //   .rpc()
-//   //   .then(confirm)
-//   //   // .then(log_token_policy)
-//   //   .then(log_tx);
-
-//   // });
-
-
-
-
-//   // CREATE NEW FULLY DEFINED USER POLICY
-//   it("Create new fully defined User Policy", async () => {
-
-//     const tx = await program.methods.newFullWalletPolicy(
-//         signer1.publicKey,
-//         true,
-//         signer2.publicKey,
-//         false,
-//         allow_list,
-//         block_list,
-//         spending_window
-//     )
-//     .accounts({
-//       walletPolicy: walletPolicyPDA,
-//       systemProgram: anchor.web3.SystemProgram.programId,
-//     })
-//     .rpc()
-//     .then(confirm)
-//     // .then(log_wallet_policy)
-//     .then(log_tx);
-
-//   });
-  
-  
-//   // DELETE USER POLICY
-//   it("Delete Wallet Policy", async () => {
-
-//     const tx = await program.methods.deleteWalletPolicy()
-//     .accounts({
-//       walletPolicy: walletPolicyPDA,
-//       systemProgram: anchor.web3.SystemProgram.programId,
-//     })
-//     .rpc()
-//     .then(confirm)
-//     // .then(log_wallet_policy)
-//     .then(log_tx);
-
-//   });
-
-//   // CREATE NEW BASIC USER POLICY
-//   it("Create new basic Wallet Policy", async () => {
-
-//     const tx = await program.methods.newWalletPolicy()
-//     .accounts({
-//       walletPolicy: walletPolicyPDA,
-//       systemProgram: anchor.web3.SystemProgram.programId,
-//     })
-//     .rpc()
-//     .then(confirm)
-//     // .then(log_wallet_policy)
-//     .then(log_tx);
-
-//   });
-
-
-//   // ADD SIGNER1 TO USER POLICY with REQUIRE FALSE
-//   it("Add signer1 to wallet policy require false", async () => {
-
-//     const tx = await program.methods.addSigner1ToWalletPolicy(
-//       signer1.publicKey,
-//       false
-//     )
-//     .accounts({
-//       walletPolicy: walletPolicyPDA,
-//       systemProgram: anchor.web3.SystemProgram.programId,
-//     })
-//     .rpc()
-//     .then(confirm)
-//     // .then(log_wallet_policy)
-//     .then(log_tx);
-
-//     });
-
-
-//     // REMOVE SIGNER1 FROM USER POLICY
-//     it("Remove signer1 from wallet policy", async () => {
-
-//         const tx = await program.methods.removeSigner1FromWalletPolicy()
-//         .accounts({
-//         walletPolicy: walletPolicyPDA,
-//         systemProgram: anchor.web3.SystemProgram.programId,
-//         })
-//         .rpc()
-//         .then(confirm)
-//         // .then(log_wallet_policy)
-//         .then(log_tx);
-
-//     });
-
-
-//   // ADD SIGNER1 TO USER POLICY with REQUIRE TRUE
-//   it("Add signer1 to wallet policy require true", async () => {
-
-//     const tx = await program.methods.addSigner1ToWalletPolicy(
-//       signer1.publicKey,
-//       true
-//     )
-//     .accounts({
-//       walletPolicy: walletPolicyPDA,
-//       systemProgram: anchor.web3.SystemProgram.programId,
-//     })
-//     .rpc()
-//     .then(confirm)
-//     // .then(log_wallet_policy)
-//     .then(log_tx);
-
-//   });
-
-
-
-//   // ADD SIGNER2 TO USER POLICY with REQUIRE FALSE
-//   it("Add signer2 to wallet policy require false", async () => {
-
-//     const tx = await program.methods.addSigner2ToWalletPolicy(
-//       signer2.publicKey,
-//       false
-//     )
-//     .accounts({
-//       walletPolicy: walletPolicyPDA,
-//       systemProgram: anchor.web3.SystemProgram.programId,
-//     })
-//     .rpc()
-//     .then(confirm)
-//     // .then(log_wallet_policy)
-//     .then(log_tx);
-
-//     });
-
-
-//     // REMOVE SIGNER2 FROM USER POLICY
-//     it("Remove signer2 from wallet policy", async () => {
-
-//         const tx = await program.methods.removeSigner2FromWalletPolicy()
-//         .accounts({
-//         walletPolicy: walletPolicyPDA,
-//         systemProgram: anchor.web3.SystemProgram.programId,
-//         })
-//         .rpc()
-//         .then(confirm)
-//         // .then(log_wallet_policy)
-//         .then(log_tx);
-
-//     });
-
-
-//   // ADD SIGNER2 TO USER POLICY with REQUIRE TRUE
-//   it("Add signer2 to wallet policy require true", async () => {
-
-//     const tx = await program.methods.addSigner2ToWalletPolicy(
-//       signer1.publicKey,
-//       true
-//     )
-//     .accounts({
-//       walletPolicy: walletPolicyPDA,
-//       systemProgram: anchor.web3.SystemProgram.programId,
-//     })
-//     .rpc()
-//     .then(confirm)
-//     // .then(log_wallet_policy)
-//     .then(log_tx);
-
-//   });  
-
-
-//     // ADD PUBLIC KEY TO ALLOW LIST
-//     it("Add a list of public keys to allow list", async () => {
-
-//         const tx = await program.methods.addAllowedPublickeysToWalletPolicy(
-//           allow_list,
-//         )
-//         .accounts({
-//           walletPolicy: walletPolicyPDA,
-//           systemProgram: anchor.web3.SystemProgram.programId,
-//         })
-//         .rpc()
-//         .then(confirm)
-//         // .then(log_wallet_policy)
-//         .then(log_tx);
-    
-//       });  
-
-
-//     // REMOVE PUBLIC KEY FROM ALLOW LIST
-//     it("Remove a list of public keys from allow list", async () => {
-
-//         const tx = await program.methods.removeAllowedPublickeysFromWalletPolicy(
-//           remove_from_allow_list,
-//         )
-//         .accounts({
-//           walletPolicy: walletPolicyPDA,
-//           systemProgram: anchor.web3.SystemProgram.programId,
-//         })
-//         .rpc()
-//         .then(confirm)
-//         // .then(log_wallet_policy)
-//         .then(log_tx);
-    
-//       });  
-
-//     // ADD PUBLIC KEY TO BLOCK LIST
-//     it("Add a list of public keys to block list", async () => {
-
-//         const tx = await program.methods.addBlockedPublickeysToWalletPolicy(
-//           block_list,
-//         )
-//         .accounts({
-//           walletPolicy: walletPolicyPDA,
-//           systemProgram: anchor.web3.SystemProgram.programId,
-//         })
-//         .rpc()
-//         .then(confirm)
-//         // .then(log_wallet_policy)
-//         .then(log_tx);
-    
-//       });  
-
-
-//     // REMOVE PUBLIC KEY FROM BLOCK LIST
-//     it("Remove a list of public keys from block list", async () => {
-
-//         const tx = await program.methods.removeBlockedPublickeysFromWalletPolicy(
-//           remove_from_block_list,
-//         )
-//         .accounts({
-//           walletPolicy: walletPolicyPDA,
-//           systemProgram: anchor.web3.SystemProgram.programId,
-//         })
-//         .rpc()
-//         .then(confirm)
-//         // .then(log_wallet_policy)
-//         .then(log_tx);
-
-//       });  
-
-    
-//     // ADD SPENDING WINDOW
-//     it("Add spending window to wallet policy", async () => {
-
-//         const tx = await program.methods.addSpendingWindowToWalletPolicy(
-//           spending_window,
-//         )
-//         .accounts({
-//           walletPolicy: walletPolicyPDA,
-//           systemProgram: anchor.web3.SystemProgram.programId,
-//         })
-//         .rpc()
-//         .then(confirm)
-//         // .then(log_wallet_policy)
-//         .then(log_tx);
-    
-//       });  
-
-
-//     // REMOVE SPENDING WINDOW
-//     it("Remove spending window from wallet policy", async () => {
-
-//         const tx = await program.methods.removeSpendingWindowFromWalletPolicy()
-//         .accounts({
-//           walletPolicy: walletPolicyPDA,
-//           systemProgram: anchor.web3.SystemProgram.programId,
-//         })
-//         .rpc()
-//         .then(confirm)
-//         // .then(log_wallet_policy)
-//         .then(log_tx);
-    
-//       });  
-
-
-
-
-
-
-
-//   // UPDATE WRAPPER SYMBOL
-//   it("Update wrapper symbol", async () => {
-
-//     const tx = await program.methods.updateWrapper(
-//       "BONK"
-//     )
-//     .accounts({
-//       payer: wallet.payer.publicKey,
-//       mintWrapped: mintWrapped.publicKey,
-//       mintOriginal: mintOriginal.publicKey,
-//       wrapper: wrapper,
-//       systemProgram: anchor.web3.SystemProgram.programId,
-//       associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-//       tokenProgram: TOKEN_2022_PROGRAM_ID,
-//     })
-//     .signers([wallet.payer, mintWrapped])
-//     .rpc()
-//     .then(confirm)
-//     // .then(log_wrapper)
-//     .then(log_tx);
-
-//   });
-
-
-// // console.log(payerAtaOriginal.toString());
-
-//  // WRAP TOKEN
-// it("Wrap token", async () => {
-
-//   const tx = await program.methods.wrap(
-//       new anchor.BN(100)
-//   )
-//   .accounts({
-//     payer: wallet.payer.publicKey,
-//     payerAtaOriginal: payerAtaOriginal,
-//     payerAtaWrapped: payerAtaWrapped,
-//     mintOriginal: mintOriginal.publicKey,
-//     mintWrapped: mintWrapped.publicKey,
-//     wrapper: wrapper,
-//     vault: vault,
-//     associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-//     // REMEMBER TO SWITCH THIS UP if you use a Natvie Mint as original Token
-//     tokenProgram: TOKEN_2022_PROGRAM_ID,
-//     tokenExtensionsProgram: TOKEN_2022_PROGRAM_ID,
-//     systemProgram: anchor.web3.SystemProgram.programId,
-//   })
-//   .signers([wallet.payer])
-//   .rpc({skipPreflight: true})
-//   .then(confirm)
-//   .then(log_tx);
-// });
-
-
-
-
-//   // // DELETE TOKEN POLICY
-//   // it("Delete Token Policy", async () => {
-
-//   //   const tx = await program.methods.deleteTokenPolicy()
-//   //   .accounts({
-//   //     mintWrapped: mintWrapped.publicKey,
-//   //     tokenPolicy: tokenPolicyPDA,
-//   //     systemProgram: anchor.web3.SystemProgram.programId,
-//   //   })
-//   //   .rpc()
-//   //   .then(confirm)
-//   //   // .then(log_token_policy)
-//   //   .then(log_tx);
-
-//   // });
   
 
 
 
-//   it("Transfer", async () => {
 
-//     let signer2TokenAccount = await getOrCreateAssociatedTokenAccount(
-//       connection, 
-//       wallet.payer, 
-//       mintWrapped.publicKey, 
-//       signer2.publicKey,
-//       true,
-//       undefined,
-//       undefined,
-//       TOKEN_2022_PROGRAM_ID,
-//       ASSOCIATED_TOKEN_PROGRAM_ID
-//     )
+  // CREATE NEW FULLY DEFINED TOKEN POLICY
+  it("Create new fully defined Token Policy", async () => {
 
-//     let amount = BigInt(1);
+    const tx = await program.methods.newFullTokenPolicy(
+      new anchor.BN(1000)
+    )
+    .accounts({
+      mintWrapped: mintWrapped.publicKey,
+      tokenPolicy: tokenPolicyPDA,
+      systemProgram: anchor.web3.SystemProgram.programId,
+    })
+    .rpc()
+    .then(confirm);
+    // .then(log_token_policy);
+    // .then(log_tx);
 
-//     let transferInstructionWithHelper = await createTransferCheckedWithTransferHookInstruction( 
-//       connection,
-//       payerAtaWrapped,
-//       mintWrapped.publicKey,
-//       signer2TokenAccount.address,
-//       wallet.publicKey,
-//       amount,
-//       decimals,
-//       [],
-//       "confirmed",
-//       TOKEN_2022_PROGRAM_ID,
-//     );
-
-//     let tx = new Transaction().add(transferInstructionWithHelper);
-
-//     const txSig = await sendAndConfirmTransaction(
-//       connection,
-//       tx,
-//       [wallet.payer],
-//       { skipPreflight: true, commitment: "confirmed"}
-//     );
-//     console.log("This is the token transfer:", txSig);
-
-//   });
-
-//   it("TX should fail because transfers are over the daily spending limit", async () => {
-
-//     let signer2TokenAccount = await getOrCreateAssociatedTokenAccount(
-//       connection, 
-//       wallet.payer, 
-//       mintWrapped.publicKey, 
-//       signer2.publicKey,
-//       true,
-//       undefined,
-//       undefined,
-//       TOKEN_2022_PROGRAM_ID,
-//       ASSOCIATED_TOKEN_PROGRAM_ID
-//     )
-
-//     let amount = BigInt(1);
-
-//     let transferInstructionWithHelper = await createTransferCheckedWithTransferHookInstruction( 
-//       connection,
-//       payerAtaWrapped,
-//       mintWrapped.publicKey,
-//       signer2TokenAccount.address,
-//       wallet.publicKey,
-//       amount,
-//       decimals,
-//       [],
-//       "confirmed",
-//       TOKEN_2022_PROGRAM_ID,
-//     );
-
-//     let tx = new Transaction().add(transferInstructionWithHelper);
-
-//     const txSig = await sendAndConfirmTransaction(
-//       connection,
-//       tx,
-//       [wallet.payer],
-//       { skipPreflight: true, commitment: "confirmed"}
-//     );
-//     console.log("This is the token transfer:", txSig);
-
-//   });
+  });
 
 
-//     //       DELETE USER POLICY
-//     it("Delete Wallet Policy", async () => {
+  // DELETE TOKEN POLICY
+  it("Delete Token Policy", async () => {
 
-//       const tx = await program.methods.deleteWalletPolicy()
-//       .accounts({
-//         walletPolicy: walletPolicyPDA,
-//         systemProgram: anchor.web3.SystemProgram.programId,
-//       })
-//       .rpc()
-//       .then(confirm)
-//       // .then(log_wallet_policy)
-//       .then(log_tx);
+    const tx = await program.methods.deleteTokenPolicy()
+    .accounts({
+      mintWrapped: mintWrapped.publicKey,
+      tokenPolicy: tokenPolicyPDA,
+      systemProgram: anchor.web3.SystemProgram.programId,
+    })
+    .rpc()
+    .then(confirm)
+    // .then(log_token_policy)
+    .then(log_tx);
 
-//     });
+  });
+
+
+  // CREATE NEW BASIC TOKEN POLICY
+  it("Create new basic Token Policy", async () => {
+
+    const tx = await program.methods.newTokenPolicy()
+    .accounts({
+      mintWrapped: mintWrapped.publicKey,
+      tokenPolicy: tokenPolicyPDA,
+      systemProgram: anchor.web3.SystemProgram.programId,
+    })
+    .rpc()
+    .then(confirm)
+    // .then(log_token_policy)
+    .then(log_tx);
+
+  });
+
+
+  // ADD SPEND LIMIT TO TOKEN POLICY
+  it("Add spend limit to Token Policy", async () => {
+
+    const tx = await program.methods.addSpendLimitToTokenPolicy(
+      new anchor.BN(1)
+    )
+    .accounts({
+      mintWrapped: mintWrapped.publicKey,
+      tokenPolicy: tokenPolicyPDA,
+      systemProgram: anchor.web3.SystemProgram.programId,
+    })
+    .rpc()
+    .then(confirm)
+    // .then(log_token_policy)
+    .then(log_tx);
+
+  });
+
+
+  // // REMOVE SPEND LIMIT FROM TOKEN POLICY
+  // it("Remove spend limit from Token Policy", async () => {
+
+  //   const tx = await program.methods.removeSpendLimitFromTokenPolicy()
+  //   .accounts({
+  //     mintWrapped: mintWrapped.publicKey,
+  //     tokenPolicy: tokenPolicyPDA,
+  //     systemProgram: anchor.web3.SystemProgram.programId,
+  //   })
+  //   .rpc()
+  //   .then(confirm)
+  //   // .then(log_token_policy)
+  //   .then(log_tx);
+
+  // });
+
+
+
+
+  // CREATE NEW FULLY DEFINED USER POLICY
+  it("Create new fully defined User Policy", async () => {
+
+    const tx = await program.methods.newFullWalletPolicy(
+        signer1.publicKey,
+        true,
+        signer2.publicKey,
+        false,
+        allow_list,
+        block_list,
+        spending_window
+    )
+    .accounts({
+      walletPolicy: walletPolicyPDA,
+      systemProgram: anchor.web3.SystemProgram.programId,
+    })
+    .rpc()
+    .then(confirm)
+    // .then(log_wallet_policy)
+    .then(log_tx);
+
+  });
+  
+  
+  // DELETE USER POLICY
+  it("Delete Wallet Policy", async () => {
+
+    const tx = await program.methods.deleteWalletPolicy()
+    .accounts({
+      walletPolicy: walletPolicyPDA,
+      systemProgram: anchor.web3.SystemProgram.programId,
+    })
+    .rpc()
+    .then(confirm)
+    // .then(log_wallet_policy)
+    .then(log_tx);
+
+  });
+
+  // CREATE NEW BASIC USER POLICY
+  it("Create new basic Wallet Policy", async () => {
+
+    const tx = await program.methods.newWalletPolicy()
+    .accounts({
+      walletPolicy: walletPolicyPDA,
+      systemProgram: anchor.web3.SystemProgram.programId,
+    })
+    .rpc()
+    .then(confirm)
+    // .then(log_wallet_policy)
+    .then(log_tx);
+
+  });
+
+
+  // ADD SIGNER1 TO USER POLICY with REQUIRE FALSE
+  it("Add signer1 to wallet policy require false", async () => {
+
+    const tx = await program.methods.addSigner1ToWalletPolicy(
+      signer1.publicKey,
+      false
+    )
+    .accounts({
+      walletPolicy: walletPolicyPDA,
+      systemProgram: anchor.web3.SystemProgram.programId,
+    })
+    .rpc()
+    .then(confirm)
+    // .then(log_wallet_policy)
+    .then(log_tx);
+
+    });
+
+
+    // REMOVE SIGNER1 FROM USER POLICY
+    it("Remove signer1 from wallet policy", async () => {
+
+        const tx = await program.methods.removeSigner1FromWalletPolicy()
+        .accounts({
+        walletPolicy: walletPolicyPDA,
+        systemProgram: anchor.web3.SystemProgram.programId,
+        })
+        .rpc()
+        .then(confirm)
+        // .then(log_wallet_policy)
+        .then(log_tx);
+
+    });
+
+
+  // ADD SIGNER1 TO USER POLICY with REQUIRE TRUE
+  it("Add signer1 to wallet policy require true", async () => {
+
+    const tx = await program.methods.addSigner1ToWalletPolicy(
+      signer1.publicKey,
+      true
+    )
+    .accounts({
+      walletPolicy: walletPolicyPDA,
+      systemProgram: anchor.web3.SystemProgram.programId,
+    })
+    .rpc()
+    .then(confirm)
+    // .then(log_wallet_policy)
+    .then(log_tx);
+
+  });
+
+
+
+  // ADD SIGNER2 TO USER POLICY with REQUIRE FALSE
+  it("Add signer2 to wallet policy require false", async () => {
+
+    const tx = await program.methods.addSigner2ToWalletPolicy(
+      signer2.publicKey,
+      false
+    )
+    .accounts({
+      walletPolicy: walletPolicyPDA,
+      systemProgram: anchor.web3.SystemProgram.programId,
+    })
+    .rpc()
+    .then(confirm)
+    // .then(log_wallet_policy)
+    .then(log_tx);
+
+    });
+
+
+    // REMOVE SIGNER2 FROM USER POLICY
+    it("Remove signer2 from wallet policy", async () => {
+
+        const tx = await program.methods.removeSigner2FromWalletPolicy()
+        .accounts({
+        walletPolicy: walletPolicyPDA,
+        systemProgram: anchor.web3.SystemProgram.programId,
+        })
+        .rpc()
+        .then(confirm)
+        // .then(log_wallet_policy)
+        .then(log_tx);
+
+    });
+
+
+  // ADD SIGNER2 TO USER POLICY with REQUIRE TRUE
+  it("Add signer2 to wallet policy require true", async () => {
+
+    const tx = await program.methods.addSigner2ToWalletPolicy(
+      signer1.publicKey,
+      true
+    )
+    .accounts({
+      walletPolicy: walletPolicyPDA,
+      systemProgram: anchor.web3.SystemProgram.programId,
+    })
+    .rpc()
+    .then(confirm)
+    // .then(log_wallet_policy)
+    .then(log_tx);
+
+  });  
+
+
+    // ADD PUBLIC KEY TO ALLOW LIST
+    it("Add a list of public keys to allow list", async () => {
+
+        const tx = await program.methods.addAllowedPublickeysToWalletPolicy(
+          allow_list,
+        )
+        .accounts({
+          walletPolicy: walletPolicyPDA,
+          systemProgram: anchor.web3.SystemProgram.programId,
+        })
+        .rpc()
+        .then(confirm)
+        // .then(log_wallet_policy)
+        .then(log_tx);
+    
+      });  
+
+
+    // REMOVE PUBLIC KEY FROM ALLOW LIST
+    it("Remove a list of public keys from allow list", async () => {
+
+        const tx = await program.methods.removeAllowedPublickeysFromWalletPolicy(
+          remove_from_allow_list,
+        )
+        .accounts({
+          walletPolicy: walletPolicyPDA,
+          systemProgram: anchor.web3.SystemProgram.programId,
+        })
+        .rpc()
+        .then(confirm)
+        // .then(log_wallet_policy)
+        .then(log_tx);
+    
+      });  
+
+    // ADD PUBLIC KEY TO BLOCK LIST
+    it("Add a list of public keys to block list", async () => {
+
+        const tx = await program.methods.addBlockedPublickeysToWalletPolicy(
+          block_list,
+        )
+        .accounts({
+          walletPolicy: walletPolicyPDA,
+          systemProgram: anchor.web3.SystemProgram.programId,
+        })
+        .rpc()
+        .then(confirm)
+        // .then(log_wallet_policy)
+        .then(log_tx);
+    
+      });  
+
+
+    // REMOVE PUBLIC KEY FROM BLOCK LIST
+    it("Remove a list of public keys from block list", async () => {
+
+        const tx = await program.methods.removeBlockedPublickeysFromWalletPolicy(
+          remove_from_block_list,
+        )
+        .accounts({
+          walletPolicy: walletPolicyPDA,
+          systemProgram: anchor.web3.SystemProgram.programId,
+        })
+        .rpc()
+        .then(confirm)
+        // .then(log_wallet_policy)
+        .then(log_tx);
+
+      });  
+
+    
+    // ADD SPENDING WINDOW
+    it("Add spending window to wallet policy", async () => {
+
+        const tx = await program.methods.addSpendingWindowToWalletPolicy(
+          spending_window,
+        )
+        .accounts({
+          walletPolicy: walletPolicyPDA,
+          systemProgram: anchor.web3.SystemProgram.programId,
+        })
+        .rpc()
+        .then(confirm)
+        // .then(log_wallet_policy)
+        .then(log_tx);
+    
+      });  
+
+
+    // REMOVE SPENDING WINDOW
+    it("Remove spending window from wallet policy", async () => {
+
+        const tx = await program.methods.removeSpendingWindowFromWalletPolicy()
+        .accounts({
+          walletPolicy: walletPolicyPDA,
+          systemProgram: anchor.web3.SystemProgram.programId,
+        })
+        .rpc()
+        .then(confirm)
+        // .then(log_wallet_policy)
+        .then(log_tx);
+    
+      });  
+
+
+
+
+
+
+
+  // UPDATE WRAPPER SYMBOL
+  it("Update wrapper symbol", async () => {
+
+    const tx = await program.methods.updateWrapper(
+      "BONK"
+    )
+    .accounts({
+      payer: wallet.payer.publicKey,
+      mintWrapped: mintWrapped.publicKey,
+      mintOriginal: mintOriginal.publicKey,
+      wrapper: wrapper,
+      systemProgram: anchor.web3.SystemProgram.programId,
+      associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+      tokenProgram: TOKEN_2022_PROGRAM_ID,
+    })
+    .signers([wallet.payer, mintWrapped])
+    .rpc()
+    .then(confirm)
+    // .then(log_wrapper)
+    .then(log_tx);
+
+  });
+
+
+// console.log(payerAtaOriginal.toString());
+
+ // WRAP TOKEN
+it("Wrap token", async () => {
+
+  const tx = await program.methods.wrap(
+      new anchor.BN(100)
+  )
+  .accounts({
+    payer: wallet.payer.publicKey,
+    payerAtaOriginal: payerAtaOriginal,
+    payerAtaWrapped: payerAtaWrapped,
+    mintOriginal: mintOriginal.publicKey,
+    mintWrapped: mintWrapped.publicKey,
+    wrapper: wrapper,
+    vault: vault,
+    associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+    // REMEMBER TO SWITCH THIS UP if you use a Natvie Mint as original Token
+    tokenProgram: TOKEN_2022_PROGRAM_ID,
+    tokenExtensionsProgram: TOKEN_2022_PROGRAM_ID,
+    systemProgram: anchor.web3.SystemProgram.programId,
+  })
+  .signers([wallet.payer])
+  .rpc({skipPreflight: true})
+  .then(confirm)
+  .then(log_tx);
+});
+
+
+
+
+  // // DELETE TOKEN POLICY
+  // it("Delete Token Policy", async () => {
+
+  //   const tx = await program.methods.deleteTokenPolicy()
+  //   .accounts({
+  //     mintWrapped: mintWrapped.publicKey,
+  //     tokenPolicy: tokenPolicyPDA,
+  //     systemProgram: anchor.web3.SystemProgram.programId,
+  //   })
+  //   .rpc()
+  //   .then(confirm)
+  //   // .then(log_token_policy)
+  //   .then(log_tx);
+
+  // });
+  
+
+
+
+  it("Transfer", async () => {
+
+    let signer2TokenAccount = await getOrCreateAssociatedTokenAccount(
+      connection, 
+      wallet.payer, 
+      mintWrapped.publicKey, 
+      signer2.publicKey,
+      true,
+      undefined,
+      undefined,
+      TOKEN_2022_PROGRAM_ID,
+      ASSOCIATED_TOKEN_PROGRAM_ID
+    )
+
+    let amount = BigInt(1);
+
+    let transferInstructionWithHelper = await createTransferCheckedWithTransferHookInstruction( 
+      connection,
+      payerAtaWrapped,
+      mintWrapped.publicKey,
+      signer2TokenAccount.address,
+      wallet.publicKey,
+      amount,
+      decimals,
+      [],
+      "confirmed",
+      TOKEN_2022_PROGRAM_ID,
+    );
+
+    let tx = new Transaction().add(transferInstructionWithHelper);
+
+    const txSig = await sendAndConfirmTransaction(
+      connection,
+      tx,
+      [wallet.payer],
+      { skipPreflight: true, commitment: "confirmed"}
+    );
+    console.log("This is the token transfer:", txSig);
+
+  });
+
+  it("TX should fail because transfers are over the daily spending limit", async () => {
+
+    let signer2TokenAccount = await getOrCreateAssociatedTokenAccount(
+      connection, 
+      wallet.payer, 
+      mintWrapped.publicKey, 
+      signer2.publicKey,
+      true,
+      undefined,
+      undefined,
+      TOKEN_2022_PROGRAM_ID,
+      ASSOCIATED_TOKEN_PROGRAM_ID
+    )
+
+    let amount = BigInt(1);
+
+    let transferInstructionWithHelper = await createTransferCheckedWithTransferHookInstruction( 
+      connection,
+      payerAtaWrapped,
+      mintWrapped.publicKey,
+      signer2TokenAccount.address,
+      wallet.publicKey,
+      amount,
+      decimals,
+      [],
+      "confirmed",
+      TOKEN_2022_PROGRAM_ID,
+    );
+
+    let tx = new Transaction().add(transferInstructionWithHelper);
+
+    const txSig = await sendAndConfirmTransaction(
+      connection,
+      tx,
+      [wallet.payer],
+      { skipPreflight: true, commitment: "confirmed"}
+    );
+    console.log("This is the token transfer:", txSig);
+
+  });
+
+
+    //       DELETE USER POLICY
+    it("Delete Wallet Policy", async () => {
+
+      const tx = await program.methods.deleteWalletPolicy()
+      .accounts({
+        walletPolicy: walletPolicyPDA,
+        systemProgram: anchor.web3.SystemProgram.programId,
+      })
+      .rpc()
+      .then(confirm)
+      // .then(log_wallet_policy)
+      .then(log_tx);
+
+    });
   
 });
