@@ -33,7 +33,12 @@ Build anchor program with the new program id:<br />
 Test the program on your local Solana validator:<br />
 <code>anchor test --skip-local-validator</code>
 
+The tests will give you transaction signature to track the transactions on localnet or devnet:
+<img width="1000" alt="Screenshot 2024-04-09 at 04 07 59" src="https://github.com/Web3-Builders-Alliance/Nelis-sol_Sol_1Q24/assets/96995954/41ac2ee8-99c2-4074-abc3-a847a3b0a5a1">
+
+
+
 <br />
-<p>Code of the Android app in the <a href="">android-app folder</a></p>
+<p>Code of the Android app in the <a href="https://github.com/Web3-Builders-Alliance/Nelis-sol_Sol_1Q24/tree/main/capstone/splcards/android-app" target="_blank">android-app folder</a></p>
 
 
