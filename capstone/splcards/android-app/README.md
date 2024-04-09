@@ -1,52 +1,52 @@
-
 # SPL Cards - Android App - Screenshots
 
 ## Get Started - Page
 
-![Get Started](./screenshots/Get-Started.png)
+<img src="./screenshots/Get-Started.png" width="400">
 *Description for the Get Started image.*
 
 ## Scan SPL Card - Modal
 
-![Scan SPL Card](./screenshots/Scan-SPL-Card-Modal.png)
+<img src="./screenshots/Scan-SPL-Card-Modal.png" width="400">
 *Description for the Scan SPL Card image.*
 
 ## Unlock Wallet - Modal
 
-![Unlock Wallet](./screenshots/Unlock-Wallet-Modal.png)
+<img src="./screenshots/Unlock-Wallet-Modal.png" width="400">
 *Description for the Unlock Wallet image.*
 
 ## Recovery Phrase - Page
 
-![Recovery Phrase](./screenshots/Recovery-Phrase.png)
-*Description for the Set Up Wallet image.*
+<img src="./screenshots/Recovery-Phrase.png" width="400">
+*Description for the Recovery Phrase image.*
 
 ## Set Up Wallet - Page
 
-![Set Up Wallet](./screenshots/Setup-Wallet.png)
+<img src="./screenshots/Setup-Wallet.png" width="400">
 *Description for the Set Up Wallet image.*
 
 ## Receive Token - Modal
 
-![Receive Token](./screenshots/Receive-Token-Modal.png)
+<img src="./screenshots/Receive-Token-Modal.png" width="400">
 *Description for the Receive Token image.*
 
 ## Send Token - Modal
 
-![Send Token](./screenshots/Send-Token-Modal.png)
-*Description for the Send Modal image.*
+<img src="./screenshots/Send-Token-Modal.png" width="400">
+*Description for the Send Token image.*
 
 ## Token Policy - Modal
 
-![Token Policy](./screenshots/Token-Policy-Modal.png)
+<img src="./screenshots/Token-Policy-Modal.png" width="400">
 *Description for the Token Policy Modal image.*
 
 ## Wallet Policy - Modal
 
-![Wallet Policy Modal](./screenshots/Wallet-Policy-Modal.png)
+<img src="./screenshots/Wallet-Policy-Modal.png" width="400">
 *Description for the Wallet Policy Modal image.*
 
 ## Wrap Token - Modal
 
-![Wrap Token Modal](./screenshots/Wrap-Token-Modal.png)
+<img src="./screenshots/Wrap-Token-Modal.png" width="400">
 *Description for the Wrap Token Modal image.*
+
