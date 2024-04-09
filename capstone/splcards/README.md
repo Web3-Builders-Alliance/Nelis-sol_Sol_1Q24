@@ -40,7 +40,7 @@ The tests will give you transaction signatures to track the transactions on loca
 
 
 <br /><br />
-<h3>Code of the Android app in the <a href="https://github.com/Web3-Builders-Alliance/Nelis-sol_Sol_1Q24/tree/main/capstone/splcards/android-app" target="_blank">android-app folder.</a></h3>
+<h3>Code of the Android app in the <a href="https://github.com/Web3-Builders-Alliance/Nelis-sol_Sol_1Q24/tree/main/capstone/splcards/android-app#get-started---page" target="_blank">android-app folder.</a></h3>
 <br /><br />
 <img width="400" alt="Screenshot 2024-04-09 at 04 07 59" src="https://github.com/Web3-Builders-Alliance/Nelis-sol_Sol_1Q24/assets/96995954/7b331ce4-75b3-4bd3-8ce9-9e28645bfdd4">
 &nbsp;&nbsp;
