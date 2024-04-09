@@ -1,4 +1,9 @@
 <h1>SPL Cards & Wallet Policy protocol</h1>
+<p>Submission: </p>
+<p>Twitter: <a href="https://twitter.com/SPLcards" target="_blank">https://twitter.com/SPLcards</a></p>
+<p>Website: <a href="https://www.splcards.com" target="_blank">https://www.splcards.com</a></p>
+
+<br />
 <h2>Renaissance hackathon submission</h2>
 Program is deployed on devnet:
 <code>6jPXVk78mLJq3MAz24gasxmYmV2f3bYDd5Rp5zK92tew</code>
