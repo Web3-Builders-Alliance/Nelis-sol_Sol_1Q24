@@ -42,9 +42,10 @@ The tests will give you transaction signature to track the transactions on local
 
 <br /><br />
 <p><b>Code of the Android app in the <a href="https://github.com/Web3-Builders-Alliance/Nelis-sol_Sol_1Q24/tree/main/capstone/splcards/android-app" target="_blank">android-app folder</a></b></p>
+<img width="500" alt="Screenshot 2024-04-09 at 04 07 59" src="https://github.com/Web3-Builders-Alliance/Nelis-sol_Sol_1Q24/assets/96995954/7b331ce4-75b3-4bd3-8ce9-9e28645bfdd4">
+<img width="500" alt="Screenshot 2024-04-09 at 04 07 59" src="https://github.com/Web3-Builders-Alliance/Nelis-sol_Sol_1Q24/assets/96995954/c157aea3-08f4-4d97-8281-98eec9f9cf83">
 
-![photo_2024-04-03_13-25-56](https://github.com/Web3-Builders-Alliance/Nelis-sol_Sol_1Q24/assets/96995954/7b331ce4-75b3-4bd3-8ce9-9e28645bfdd4)
-![IMG_8566](https://github.com/Web3-Builders-Alliance/Nelis-sol_Sol_1Q24/assets/96995954/c157aea3-08f4-4d97-8281-98eec9f9cf83)
+<br /><br />
 
 
 
