@@ -1,5 +1,5 @@
-
-<h1>Renaissance hackathon submission</h1>
+<h1>SPL Cards & Wallet Policy protocol</h1>
+<h2>Renaissance hackathon submission</h2>
 Program is deployed on devnet:
 <code>6jPXVk78mLJq3MAz24gasxmYmV2f3bYDd5Rp5zK92tew</code>
 
