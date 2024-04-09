@@ -33,5 +33,7 @@ Build anchor program with the new program id:<br />
 Test the program on your local Solana validator:<br />
 <code>anchor test --skip-local-validator</code>
 
+<br />
+<p>Code of the Android app in the <a href="">android-app folder</a></p>
 
 
