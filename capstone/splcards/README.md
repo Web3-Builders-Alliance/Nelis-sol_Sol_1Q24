@@ -1,4 +1,4 @@
-<h1>SPL Cards & Wallet Policy protocol</h1>
+<h1>SPL Cards & Wallet Policy program</h1>
 <p>Twitter: <a href="https://twitter.com/SPLcards" target="_blank">https://twitter.com/SPLcards</a></p>
 <p>Website: <a href="https://www.splcards.com" target="_blank">https://www.splcards.com</a></p>
 
