@@ -15,7 +15,7 @@ Deploy program on local Solana validator
 <code>anchor deploy</code>
 
 A succesful deploy leads to the following message:
-<code>Program Id: <your-program-id></code>
+<code>Program Id: "your-program-id"</code>
 <code>Deploy success</code>
 
 Update the program id in two files:
